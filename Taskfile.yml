@@ -1,0 +1,20 @@
+# https://taskfile.dev
+
+version: '3'
+
+includes:
+  db:
+    taskfile: ./db
+    dir: ./db
+
+tasks:
+
+  k8s:start:
+    desc: Start development kubernetes cluster
+    cmds:
+      - minikube start
+
+  k8s:destroy:
+    desc: Teardown development kubernetes clusters
+    cmds:
+      - minikube delete
