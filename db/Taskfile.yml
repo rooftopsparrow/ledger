@@ -4,28 +4,38 @@ version: '3'
 
 tasks:
 
-  init:
-    desc: Initialize cockroachdb extensions and operators
-    cmds:
-      - kubectl apply -f conf/crdbclusters.yaml
-      - kubectl apply -f conf/operator.yaml
-
   deploy:
-    desc: Deploy a cockroachdb cluster
+    desc: Deploy an empty database
     cmds:
-      - kubectl apply -f ./conf/deployment.yaml
+      - helm repo add bitnami https://charts.bitnami.com/bitnami
+      - helm install ledgerdb --version 10.2.6 bitnami/postgresql
+    status:
+      - helm repo list | grep bitnami
+      - ! helm status ledgerdb
 
-  clean:
-    desc: Teardown database
+  destroy:
+    desc: Undeploy a database
     cmds:
-      - kubectl delete -f ./conf/deployment.yaml
+      - helm delete ledgerdb
+      - kubectl delete pvc -l release=ledgerdb
 
-  sql:
-    desc: Open a database shell
-    vars:
-      DB_INDEX: 0
+  export:
     cmds:
-      - kubectl exec ledger-db-{{.DB_INDEX}}
-        --stdin
+      - export POSTGRES_PASSWORD=$(kubectl get secret --namespace default ledgerdb-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
+    status:
+      - test -n "$POSTGRES_PASSWORD"
+
+  shell:
+    deps: [export]
+    cmds:
+      - kubectl run ledgerdb-postgresql-client
+        --rm
         --tty
-        -- cockroach sql --certs-dir cockroach-certs
+        --stdin
+        --restart='Never'
+        --namespace default
+        --image docker.io/bitnami/postgresql:11.10.0-debian-10-r60
+        --env="PGPASSWORD=$POSTGRES_PASSWORD"
+        --command
+        -- psql
+        --host ledgerdb-postgresql -U postgres -d postgres -p 5432
