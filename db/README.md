@@ -1,16 +1,18 @@
 # Database
 
-The database for this project is [CockroachDB][crdb]
+The database for this project is [PostgreSQL][postgresql]
 
-- The `conf` directory is kubernetes configurations
-- TODO: folder contains the schema and migrations.
-
-Read: [Build a go app with cockroachdb](https://www.cockroachlabs.com/docs/v20.2/build-a-go-app-with-cockroachdb)
+- The `migrations` directory contains migrations required
+for the application
 
 **Tasks**:
 
 ```
+# List all tasks
 task --list
+# Migrate
+task migrate
 ```
 
 [crdb]: https://www.cockroachlabs.com/docs/v20.2/index.html
+[postgresql]: https://www.postgresql.org

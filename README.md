@@ -26,7 +26,7 @@ Start the kubernetes environment:
 $ task k8s:start
 ```
 
-**Database**: [CockroachDB][].
+**Database**: [PostgreSQL][postgresql].
 
 Deploy a new empty database on your local kubernetes:
 
@@ -41,5 +41,5 @@ $ task db:shell # access database shell
 [taskfile]: https://taskfile.dev/#/
 [minikube]: https://minikube.sigs.k8s.io/docs/
 [kubectl]: https://kubernetes.io/docs/tasks/tools/install-kubectl/
-[CockroachDB]: https://www.cockroachlabs.com/docs/stable/index.html
+[postgresql]: https://www.postgresql.org
 [helm]: https://helm.sh
