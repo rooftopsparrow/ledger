@@ -12,6 +12,7 @@ for the application
 task --list
 # Migrate
 task migrate
+
 ```
 
 **MANUAL**:
@@ -21,5 +22,3 @@ task migrate
 ```sh
 go run migrations/*.go
 ```
-
-[postgresql]: https://www.postgresql.org
