@@ -1,5 +1,6 @@
 package main
 
+
 // Landing page (ledger.html) on local server with form fields.
 // Reference:
 // https://astaxie.gitbooks.io/build-web-application-with-golang/content/en/04.1.html
@@ -7,6 +8,7 @@ package main
 import (
 	"fmt"
 	// "html/template"
+
 	"log"
 	"net/http"
 )
@@ -18,10 +20,12 @@ type UserInfo struct {
 	Password string
 }
 
+
 func main() {
 
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fs)
+
 
 	// *** Stuck on displaying info in current page ***
 	http.HandleFunc("/welcome", registerBtn)
@@ -33,6 +37,7 @@ func main() {
 	}
 	http.ListenAndServe(":8080", nil)
 }
+
 
 func registerBtn(w http.ResponseWriter, r *http.Request) {
 	// Struct fields accessible by . operator.
