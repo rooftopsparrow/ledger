@@ -5,7 +5,7 @@ version: '3'
 tasks:
 
   deploy:
-    desc: Deploy an empty database
+    # desc: Deploy an empty database
     cmds:
       - helm repo add bitnami https://charts.bitnami.com/bitnami
       - helm install ledgerdb --version 10.2.6 bitnami/postgresql
@@ -14,7 +14,7 @@ tasks:
       - ! helm status ledgerdb
 
   destroy:
-    desc: Undeploy a database
+    # desc: Undeploy a database
     cmds:
       - helm delete ledgerdb
       - kubectl delete pvc -l release=ledgerdb
@@ -25,7 +25,7 @@ tasks:
     status:
       - test -n "$POSTGRES_PASSWORD"
 
-  shell:
+  prod-shell:
     deps: [export]
     cmds:
       - kubectl run ledgerdb-postgresql-client
@@ -39,3 +39,27 @@ tasks:
         --command
         -- psql
         --host ledgerdb-postgresql -U postgres -d postgres -p 5432
+
+  shell:
+    desc: Open a pslq shell on the running database
+    cmds:
+      - docker exec -it ledgerdb-postgresql psql -U postgres
+
+  start:
+    desc: Start a clean database and migrate to latest schema
+    cmds:
+      - docker run --name ledgerdb-postgresql -p 5432:5432 -e POSTGRES_PASSWORD=mysecretpassword -d postgres:11
+      - task: migrate
+    status:
+      - test $(docker ps --all --filter name=ledgerdb-postgresql --quiet)
+
+  stop:
+    desc: Stop and remove the database
+    cmds:
+      - docker stop ledgerdb-postgresql
+      - docker rm ledgerdb-postgesql
+
+  migrate:
+    desc: Run schema migrations
+    cmds:
+      - go run migrations/*.go migrate

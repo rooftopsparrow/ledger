@@ -12,7 +12,13 @@ for the application
 task --list
 # Migrate
 task migrate
+
 ```
 
-[crdb]: https://www.cockroachlabs.com/docs/v20.2/index.html
-[postgresql]: https://www.postgresql.org
+**MANUAL**:
+
+**TODO**: Figure out auto-migrations on k8s cluster
+
+```sh
+go run migrations/*.go
+```
