@@ -1,7 +1,8 @@
 Feature: Create New User
 
-    Users who want the product need to sign up!
-    Users expect us to protect their data.
+    Users who want to use the product need to sign up!
+    The product requires a contact email address, name, and password
+    for identification.
 
   Scenario: New User
     Given a user does not have an account and wants to sign up

@@ -1,41 +1,54 @@
 package main
 
-import "github.com/cucumber/godog"
+import (
+	"fmt"
+	"math/rand"
+
+	"github.com/cucumber/godog"
+)
 
 type feature struct {
-	user NewUser
+	user *User
 }
 
-type NewUser struct {
+type User struct {
+	ID       int64
 	Email    string
 	FullName string
 	Password string
 }
 
 func (f *feature) aUserDoesNotHaveAnAccountAndWantsToSignUp() error {
-	user := NewUser{}
+	user := &User{}
 	f.user = user
-	return
+	return nil
 }
 
 func (f *feature) theUserAsksToSignUp() error {
-	return godog.ErrPending
+	f.user.ID = rand.Int63()
+	return nil
 }
 
 func (f *feature) theUserIsSuccessfullySignedUp() error {
-	return godog.ErrPending
+	if f.user.ID == 0 {
+		return fmt.Errorf("ID was not fulfilled")
+	}
+	return nil
 }
 
-func (f *feature) theUserProvidesTheirEmailAddressAs(arg1 string) error {
-	return godog.ErrPending
+func (f *feature) theUserProvidesTheirEmailAddressAs(email string) error {
+	f.user.Email = email
+	return nil
 }
 
-func (f *feature) theUserProvidesTheirNameAs(arg1 string) error {
-	return godog.ErrPending
+func (f *feature) theUserProvidesTheirNameAs(name string) error {
+	f.user.FullName = name
+	return nil
 }
 
-func (f *feature) theUserProvidesTheirPasswordAs(arg1 string) error {
-	return godog.ErrPending
+func (f *feature) theUserProvidesTheirPasswordAs(pass string) error {
+	f.user.Password = pass
+	return nil
 }
 
 func InitializeScenario(ctx *godog.ScenarioContext) {
