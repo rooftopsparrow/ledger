@@ -6,6 +6,9 @@ includes:
   db:
     taskfile: ./db
     dir: ./db
+  web:
+    taskfile: ./web
+    dir: ./web
 
 tasks:
 
