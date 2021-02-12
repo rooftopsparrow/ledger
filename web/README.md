@@ -1,4 +1,4 @@
-## go_web folder
+## Landing page .go & .html files
 
 Execute landing.go file
 
