@@ -1,0 +1,17 @@
+# https://taskfile.dev
+
+version: '3'
+
+tasks:
+
+  install:
+    desc: Install dependencies
+    cmds:
+      - go get github.com/cucumber/godog/cmd/godog@v0.11.0
+
+  test:
+    deps:
+      - install
+    desc: Run all feature tests
+    cmds:
+      - godog

@@ -1,62 +1,89 @@
 package main
 
 import (
-	"fmt"
 	"math/rand"
+	"time"
 
 	"github.com/cucumber/godog"
 )
 
-type feature struct {
-	user *User
-}
+var user 
 
 type User struct {
-	ID       int64
+	ID       uint64
 	Email    string
 	FullName string
 	Password string
+	Session  string
 }
 
-func (f *feature) aUserDoesNotHaveAnAccountAndWantsToSignUp() error {
-	user := &User{}
-	f.user = user
+func aUserDoesNotHaveAnAccountAndWantsToSignUp() error {
 	return nil
 }
 
-func (f *feature) theUserAsksToSignUp() error {
-	f.user.ID = rand.Int63()
+func theUserAsksToSignUp() error {
+	user.ID = rand.Uint64()
 	return nil
 }
 
-func (f *feature) theUserIsSuccessfullySignedUp() error {
-	if f.user.ID == 0 {
-		return fmt.Errorf("ID was not fulfilled")
+func theUserProvidesTheirEmailAddressAs(email string) error {
+	user.Email = email
+	return nil
+}
+
+func theUserProvidesTheirNameAs(name string) error {
+	user.FullName = name
+	return nil
+}
+
+func theUserProvidesTheirPasswordAs(pass string) error {
+	user.Password = pass
+	return nil
+}
+
+func theUserAttemptsToLogin() error {
+	return godog.ErrPending
+}
+
+func theUserDecidesToLogout() error {
+	return godog.ErrPending
+}
+
+func theUserDoesNotHaveAValidSession() error {
+	return godog.ErrPending
+}
+
+func theUserHasAValidSessionForDuration(d string) error {
+	duration, err := time.ParseDuration(d)
+	if err != nil {
+		return err
 	}
-	return nil
+	return godog.ErrPending
 }
 
-func (f *feature) theUserProvidesTheirEmailAddressAs(email string) error {
-	f.user.Email = email
-	return nil
+func theUserHasAValidSession() error {
+	return godog.ErrPending
 }
 
-func (f *feature) theUserProvidesTheirNameAs(name string) error {
-	f.user.FullName = name
-	return nil
-}
-
-func (f *feature) theUserProvidesTheirPasswordAs(pass string) error {
-	f.user.Password = pass
-	return nil
+func InitializeTestSuite(ctx *godog.TestSuiteContext) {
+	ctx.BeforeSuite(func() {
+		user = User{}
+	})
 }
 
 func InitializeScenario(ctx *godog.ScenarioContext) {
-	f := &feature{}
-	ctx.Step(`^a user does not have an account and wants to sign up$`, f.aUserDoesNotHaveAnAccountAndWantsToSignUp)
-	ctx.Step(`^the user asks to sign up$`, f.theUserAsksToSignUp)
-	ctx.Step(`^the user is successfully signed up$`, f.theUserIsSuccessfullySignedUp)
-	ctx.Step(`^the user provides their email address as "([^"]*)"$`, f.theUserProvidesTheirEmailAddressAs)
-	ctx.Step(`^the user provides their name as "([^"]*)"$`, f.theUserProvidesTheirNameAs)
-	ctx.Step(`^the user provides their password as "([^"]*)"$`, f.theUserProvidesTheirPasswordAs)
+	// clean the state before every scenario
+	ctx.BeforeScenario(func(*godog.Scenario) {
+		user = User{}
+	})
+	ctx.Step(`^a user does not have an account and wants to sign up$`, aUserDoesNotHaveAnAccountAndWantsToSignUp)
+	ctx.Step(`^the user asks to sign up$`, theUserAsksToSignUp)
+	ctx.Step(`^the user provides their email address as "([^"]*)"$`, theUserProvidesTheirEmailAddressAs)
+	ctx.Step(`^the user provides their name as "([^"]*)"$`, theUserProvidesTheirNameAs)
+	ctx.Step(`^the user provides their password as "([^"]*)"$`, theUserProvidesTheirPasswordAs)
+	ctx.Step(`^the user attempts to login$`, theUserAttemptsToLogin)
+	ctx.Step(`^the user decides to logout$`, theUserDecidesToLogout)
+	ctx.Step(`^the user does not have a valid session$`, theUserDoesNotHaveAValidSession)
+	ctx.Step(`^the user has a valid session for "([^"]*)"$`, theUserHasAValidSessionForDuration)
+	ctx.Step(`^the user has a valid session$`, theUserHasAValidSession)
 }
