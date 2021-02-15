@@ -1,8 +1,8 @@
 Feature: User Management
 
-    Users who want to use the product need to sign up!
-    The product requires a contact email address, name, and password
-    for identification.
+    Users who want to use the product need to sign up and
+    manage their profile. The product requires a contact email
+    name, and password for identification.
 
   Scenario: New User
     Given a user does not have an account and wants to sign up
@@ -18,7 +18,7 @@ Feature: User Management
     And the user provides their password as "supersecret"
     When the user attempts to login
     Then the user has a valid session for "18h"
-  
+
   Scenario: User Logout
     Given the user has a valid session
     When the user decides to logout

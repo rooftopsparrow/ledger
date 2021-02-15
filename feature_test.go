@@ -1,13 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 
 	"github.com/cucumber/godog"
 )
 
-var user 
+var user User
 
 type User struct {
 	ID       uint64
@@ -58,6 +59,7 @@ func theUserHasAValidSessionForDuration(d string) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println(duration)
 	return godog.ErrPending
 }
 
