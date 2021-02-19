@@ -48,8 +48,11 @@ tasks:
   start:
     desc: Start a clean database and migrate to latest schema
     cmds:
-      - docker run --name ledgerdb-postgresql -p 5432:5432 -e POSTGRES_PASSWORD=mysecretpassword -d postgres:11
-      - task: migrate
+      - docker run
+        --name ledgerdb-postgresql
+        -p 5432:5432
+        -e POSTGRES_PASSWORD=mysecretpassword
+        -d postgres:11
     status:
       - test $(docker ps --all --filter name=ledgerdb-postgresql --quiet)
 
