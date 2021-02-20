@@ -16,13 +16,13 @@ Feature: Account Management
 
   Scenario Outline: View Current Balance
     Given a user's bank account is connected
-    And the account has a balance of <amount>
-    Then the user sees the account balance is <amount>
+    And the account has a balance of <amount> dollars
+    Then the user sees the account balance is <amount> dollars
 
     Examples:
         | amount |
-        | $237.65 |
-        | $0.00 |
-        | $0.01 |
-        | $10,000,000,000,000.00 |
-        | -$43.52 |
+        | 237.65 |
+        | 0.00 |
+        | 0.01 |
+        | 10000000000000.00 |
+        | -43.52 |
