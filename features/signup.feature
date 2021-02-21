@@ -10,7 +10,7 @@ Feature: User Management and Authentication
     And the user provides their name as "Ledger User"
     And the user provides their password as "supersecret"
     When the user asks to sign up
-    Then the user has a valid session for "18h"
+    Then the user is created successfully
 
   Scenario: User Login
     Given the user does not have a valid session

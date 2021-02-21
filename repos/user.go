@@ -11,7 +11,7 @@ import (
 // UserRepo is a custom model type which wraps
 // the sql.DB connection pool and other needed types
 type UserRepo struct {
-	DB *pg.DB
+	db *pg.DB
 }
 
 // CreateUser inserts new user records
@@ -26,7 +26,7 @@ func (r *UserRepo) CreateUser(name string, email string) (*User, error) {
 	if err := user.isValid(); err != nil {
 		return nil, err
 	}
-	if _, err := r.DB.Model(user).Insert(); err != nil {
+	if _, err := r.db.Model(user).Returning("*").Insert(); err != nil {
 		return nil, err
 	}
 	return user, nil

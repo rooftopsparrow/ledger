@@ -2,14 +2,17 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"testing"
 
+	"github.com/Rhymond/go-money"
 	"github.com/cucumber/godog"
 	"github.com/cucumber/godog/colors"
 	"github.com/go-pg/pg/v10"
+	"github.com/icrowley/fake"
 	"github.com/joho/godotenv"
-	db "msudenver.edu/ledger/db"
+	"msudenver.edu/ledger/db"
 	"msudenver.edu/ledger/repos"
 )
 
@@ -20,41 +23,43 @@ type UserForm struct {
 	confirm  string
 }
 
-type Env struct {
-	db       *pg.DB
-	userForm *UserForm
-	users    *repos.UserRepo
+var database *pg.DB
+var repo *repos.Repo
+
+type featureState struct {
+	// Instances
 	user     *repos.User
+	userForm *UserForm
 }
 
-var e *Env
+var f *featureState
 
 func aUserDoesNotHaveAnAccountAndWantsToSignUp() error {
-	e.userForm = new(UserForm)
+	f.userForm = new(UserForm)
 	return nil
 }
 
 func theUserAsksToSignUp() error {
-	u, err := e.users.CreateUser(e.userForm.name, e.userForm.email)
+	u, err := repo.Users.CreateUser(f.userForm.name, f.userForm.email)
 	if err != nil {
 		return err
 	}
-	e.user = u
+	f.user = u
 	return nil
 }
 
 func theUserProvidesTheirEmailAddressAs(email string) error {
-	e.userForm.email = email
+	f.userForm.email = email
 	return nil
 }
 
 func theUserProvidesTheirNameAs(name string) error {
-	e.userForm.name = name
+	f.userForm.name = name
 	return nil
 }
 
 func theUserProvidesTheirPasswordAs(pass string) error {
-	e.userForm.password = pass
+	f.userForm.password = pass
 	return nil
 }
 
@@ -82,10 +87,6 @@ func theAccountHasABalanceOf(amount int64) error {
 	return godog.ErrPending
 }
 
-func theUserIsLoggedIn() error {
-	return godog.ErrPending
-}
-
 func theUserProvidesAccountNumberAs(arg1 int) error {
 	return godog.ErrPending
 }
@@ -106,16 +107,32 @@ func theUserWantsToConnectToTheBank(arg1 string) error {
 	return godog.ErrPending
 }
 
-func theAccountHasABalanceOfDollars(balance float64) error {
+func theAccountHasABalanceOfDollars(balance money.Amount) error {
 	return godog.ErrPending
 }
 
-func theUserSeesTheAccountBalanceIsDollars(balance float64) error {
+func theUserSeesTheAccountBalanceIsDollars(balance money.Amount) error {
 	return godog.ErrPending
 }
 
-func userExists(arg1 string) error {
-	return godog.ErrPending
+func theUserIsCreatedSuccessfully() error {
+	if f.user == nil {
+		return fmt.Errorf("User was not created")
+	}
+	if f.user.ID <= 0 {
+		return fmt.Errorf("User should have id")
+	}
+	return nil
+}
+
+func userHasSignedUp(name string) error {
+	email := fake.EmailAddress()
+	u, err := repo.Users.CreateUser(name, email)
+	if err != nil {
+		return err
+	}
+	f.user = u
+	return nil
 }
 
 func aUsersBankAccountIsConnected() error {
@@ -133,17 +150,18 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	// clean the state before every scenario
 
 	ctx.BeforeScenario(func(sc *godog.Scenario) {
-		db := db.Init()
-		if err := repos.CreateSchema(db); err != nil {
+		f = new(featureState)
+		database := db.Init()
+		repo = repos.CreateRepo(database)
+		if err := repo.CreateSchema(database); err != nil {
 			panic(err)
 		}
-		e = new(Env)
-		e.db = db
-		e.users = &repos.UserRepo{DB: db}
 	})
 
 	ctx.AfterScenario(func(sc *godog.Scenario, err error) {
-		e.db.Close()
+		if database != nil {
+			database.Close()
+		}
 	})
 
 	ctx.Step(`^the user is new and wants to sign up$`, aUserDoesNotHaveAnAccountAndWantsToSignUp)
@@ -158,15 +176,14 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^the user does not have a valid session$`, theUserDoesNotHaveAValidSession)
 	ctx.Step(`^the user has a valid session for "([^"]*)"$`, theUserHasAValidSessionForDuration)
 	ctx.Step(`^the user has a valid session$`, theUserHasAValidSession)
-	ctx.Step(`^the user is logged in$`, theUserIsLoggedIn)
 	ctx.Step(`^the user provides account number as (\d+)$`, theUserProvidesAccountNumberAs)
 	ctx.Step(`^the user provides account password as "([^"]*)"$`, theUserProvidesAccountPasswordAs)
 	ctx.Step(`^the user provides routing number as (-?\d+)$`, theUserProvidesRoutingNumberAs)
 	ctx.Step(`^the user should see "([^"]*)" has a valid connection$`, theUserShouldSeeHasAValidConnection)
 	ctx.Step(`^the user wants to connect to the bank "([^"]*)"$`, theUserWantsToConnectToTheBank)
-	ctx.Step(`^the user "([^"]*)" exists$`, userExists)
 	ctx.Step(`^a user\'s bank account is connected$`, aUsersBankAccountIsConnected)
-	ctx.Step(`^user "([^"]*)" exists$`, userExists)
+	ctx.Step(`^the user is created successfully$`, theUserIsCreatedSuccessfully)
+	ctx.Step(`^user "([^"]*)" has signed up$`, userHasSignedUp)
 }
 
 var opts = godog.Options{

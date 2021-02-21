@@ -9,10 +9,29 @@ import (
 
 var tables = []interface{}{
 	(*User)(nil),
+	(*PlaidItem)(nil),
+	(*Account)(nil),
+}
+
+type Repo struct {
+	db    *pg.DB
+	Users interface {
+		CreateUser(name string, email string) (*User, error)
+	}
+	Accounts interface{}
+}
+
+func CreateRepo(db *pg.DB) *Repo {
+	repo := &Repo{
+		db:       db,
+		Users:    &UserRepo{db: db},
+		Accounts: &AccountRepo{db: db},
+	}
+	return repo
 }
 
 // CreateSchema creates the tables in the database
-func CreateSchema(db *pg.DB) error {
+func (r *Repo) CreateSchema(db *pg.DB) error {
 	temp := os.Getenv("POSTGRES_TEMP") == "true"
 	for _, table := range tables {
 		opts := &orm.CreateTableOptions{
