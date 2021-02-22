@@ -2,14 +2,10 @@ package db
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	pg "github.com/go-pg/pg/v10"
-	migrations "github.com/robinjoseph08/go-pg-migrations/v3"
 )
-
-const directory = "db/migrations"
 
 // Init starts the database pool
 func Init() *pg.DB {
@@ -35,10 +31,11 @@ func Init() *pg.DB {
 	return pg.Connect(opts)
 }
 
-func main() {
-	db := Init()
-	err := migrations.Run(db, directory, os.Args)
-	if err != nil {
-		log.Fatalln(err)
-	}
-}
+// const directory = "db/migrations"
+// func main() {
+// 	db := Init()
+// 	err := migrations.Run(db, directory, os.Args)
+// 	if err != nil {
+// 		log.Fatalln(err)
+// 	}
+// }

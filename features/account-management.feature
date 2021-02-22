@@ -7,12 +7,12 @@ Feature: Account Management
     Given user "Mr. Robert Downey Jr." has signed up
     And the user is created successfully
 
-  Scenario: Connect To Basic Account
-    When the user wants to connect to the bank "Mega Bank Corp."
-    And the user provides account number as 1234567890
-    And the user provides routing number as 3333333
-    And the user provides account password as "letmein"
-    Then the user should see "Evil Bank Corp." has a valid connection
+  # Scenario: Connect To Basic Account
+  #   When the user wants to link to the bank "Mega Bank Corp."
+  #   And the user provides account number as 1234567890
+  #   And the user provides routing number as 3333333
+  #   And the user provides account password as "letmein"
+  #   Then the user should see "Evil Bank Corp." has a valid connection
 
   Scenario Outline: View Current Balance
     Given a user's bank account is connected

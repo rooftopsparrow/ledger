@@ -11,31 +11,32 @@ type AccountRepo struct {
 	db *pg.DB
 }
 
-// Item reprensents a generic element from Plaid
-type PlaidItem struct {
-	ID            uint64
-	User          *User  `pg:",notnull"`
-	AccessToken   string `pg:",unique,notnull"`
-	ItemID        string `pg:"on_delete:CASCADE,notnull"`
-	InstitutionID string `pg:",notnull"`
-	Status        string `pg:",notnull"`
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+type Account struct {
+	ID        uint64
+	UserID    uint64
+	User      *User
+	AccountID string `pg:",notnull"`
+	Name      string `pg:",notnull"`
+	Mask      string `pg:",notnull"`
+	Balance   money.Money
+	Type      string
+	Subtype   string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt time.Time
 }
 
-type Account struct {
-	ID               uint64
-	Item             *PlaidItem
-	AccountID        string `pg:",notnull"`
-	Name             string `pg:",notnull"`
-	Mask             string `pg:",notnull"`
-	LongName         string
-	CurrentBalance   money.Amount
-	AvailableBalance money.Amount
-	Currency         money.Currency
-	Type             string
-	Subtype          string
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
-	DeletedAt        time.Time
+func (r *AccountRepo) CreateAccount(accountId, name, mask string, balance money.Money) (*Account, error) {
+	account := &Account{
+		AccountID: accountId,
+		Name:      name,
+		Mask:      mask,
+		Type:      "depository",
+		Subtype:   "checking",
+	}
+	_, err := r.db.Model(account).Insert()
+	if err != nil {
+		return nil, err
+	}
+	return account, nil
 }

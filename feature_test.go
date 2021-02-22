@@ -23,6 +23,9 @@ type UserForm struct {
 	confirm  string
 }
 
+type AccountForm struct {
+}
+
 var database *pg.DB
 var repo *repos.Repo
 
@@ -103,7 +106,7 @@ func theUserShouldSeeHasAValidConnection(arg1 string) error {
 	return godog.ErrPending
 }
 
-func theUserWantsToConnectToTheBank(arg1 string) error {
+func theUserWantsToConnectToTheBank(bankName string) error {
 	return godog.ErrPending
 }
 
@@ -181,7 +184,6 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^the user provides routing number as (-?\d+)$`, theUserProvidesRoutingNumberAs)
 	ctx.Step(`^the user should see "([^"]*)" has a valid connection$`, theUserShouldSeeHasAValidConnection)
 	ctx.Step(`^the user wants to connect to the bank "([^"]*)"$`, theUserWantsToConnectToTheBank)
-	ctx.Step(`^a user\'s bank account is connected$`, aUsersBankAccountIsConnected)
 	ctx.Step(`^the user is created successfully$`, theUserIsCreatedSuccessfully)
 	ctx.Step(`^user "([^"]*)" has signed up$`, userHasSignedUp)
 }

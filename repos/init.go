@@ -18,7 +18,8 @@ type Repo struct {
 	Users interface {
 		CreateUser(name string, email string) (*User, error)
 	}
-	Accounts interface{}
+	Accounts interface {
+	}
 }
 
 func CreateRepo(db *pg.DB) *Repo {
