@@ -9,6 +9,7 @@ includes:
   web:
     taskfile: ./web
     dir: ./web
+  features: ./features
 
 tasks:
 
