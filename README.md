@@ -36,6 +36,12 @@ $ kubectl get pods -w # watch cluster come up
 $ task db:shell # access database shell
 ```
 
+## Testing
+
+**Feature Testing**
+
+Feature acceptance testing is done via [godog](https://github.com/cucumber/godog)
+
 [go]: https://golang.org
 [docker]: https://www.docker.com/products/docker-desktop
 [taskfile]: https://taskfile.dev/#/
