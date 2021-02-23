@@ -24,6 +24,7 @@ type UserInfo struct {
 }
 
 var repo *repos.Repo
+var signKey = []byte("")
 
 func main() {
 
@@ -37,10 +38,6 @@ func main() {
 		panic(err)
 	}
 
-
-var signKey = []byte("")
-
-func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fs)
 
@@ -78,8 +75,6 @@ func registerBtn(w http.ResponseWriter, r *http.Request) {
 	// Display user entered name & email in browser.
 	fmt.Fprintf(w, str)
 
-	// fmt.Println("password:", r.Form["password"])
-
 	tokenString, err := GenerateJWT(details)
 	if err != nil {
 		fmt.Println("Error creating JWT.")
@@ -92,7 +87,6 @@ func GenerateJWT(usr UserInfo) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
-	claims["authorized"] = true
 	claims["user"] = usr.Name
 	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
 
