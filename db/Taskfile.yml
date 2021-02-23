@@ -60,7 +60,7 @@ tasks:
     desc: Stop and remove the database
     cmds:
       - docker stop ledgerdb-postgresql
-      - docker rm ledgerdb-postgresql
+      - docker rm ledgerdb-postgesql
 
   migrate:
     desc: Run schema migrations
