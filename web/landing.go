@@ -45,7 +45,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", nil)
 }
 
 func registerBtn(w http.ResponseWriter, r *http.Request) {
@@ -71,22 +71,27 @@ func registerBtn(w http.ResponseWriter, r *http.Request) {
 	// Display user entered name & email in browser.
 	fmt.Fprintf(w, str)
 
-	tokenString, err := GenerateJWT(details)
+	tokenString, err := GenerateJWT(user)
 	if err != nil {
 		fmt.Println("Error creating JWT.")
 	}
 	fmt.Println(tokenString)
+
 }
 
 // GenerateJWT ...
-func GenerateJWT(usr UserInfo) (string, error) {
+func GenerateJWT(usr *repos.User) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
-	claims["user"] = usr.Name
-	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
+	claims["id"] = usr.ID
+	claims["user"] = usr.FullName
+	claims["iat"] = time.Now().Unix()
+	claims["exp"] = time.Now().Add(time.Minute * 60).Unix()
 
-	signKey = []byte(usr.Password)
+	// I think this is in the wrong place/incorrect usage (Brian 2.23.21)
+	// Nav to: https://jwt.io/  paste tokenString in text field.
+	signKey = []byte("supersecret")
 
 	tokenString, err := token.SignedString(signKey)
 	if err != nil {
