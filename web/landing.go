@@ -8,11 +8,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"github.com/joho/godotenv"
+	"time"
+
+	jwt "github.com/dgrijalva/jwt-go"
+	_ "github.com/joho/godotenv/autoload"
 	"msudenver.edu/ledger/db"
 	"msudenver.edu/ledger/repos"
-	"time"
-	jwt "github.com/dgrijalva/jwt-go"
 )
 
 // UserInfo form fields.
@@ -20,7 +21,6 @@ type UserInfo struct {
 	Email    string
 	Name     string `json:"name"`
 	Password string `json:"password"`
-	
 }
 
 var repo *repos.Repo
@@ -28,14 +28,10 @@ var signKey = []byte("")
 
 func main() {
 
-	err := godotenv.Load()
-	if err != nil {
-		panic(err)
-	}
 	database := db.Init()
 	repo = repos.CreateRepo(database)
 	if err := repo.CreateSchema(database); err != nil {
-		panic(err)
+		log.Fatal("Unable to create schemas", err)
 	}
 
 	fs := http.FileServer(http.Dir("./static"))
@@ -45,7 +41,7 @@ func main() {
 	http.HandleFunc("/welcome", registerBtn)
 
 	log.Println("Listening on port :8080...")
-	err = http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -91,7 +87,7 @@ func GenerateJWT(usr UserInfo) (string, error) {
 	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
 
 	signKey = []byte(usr.Password)
-	
+
 	tokenString, err := token.SignedString(signKey)
 	if err != nil {
 		return "", err

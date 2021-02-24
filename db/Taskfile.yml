@@ -46,7 +46,7 @@ tasks:
       - docker exec -it ledgerdb-postgresql psql -U postgres
 
   start:
-    desc: Start a clean database and migrate to latest schema
+    desc: Start a clean database
     cmds:
       - docker run
         --name ledgerdb-postgresql
@@ -60,4 +60,4 @@ tasks:
     desc: Stop and remove the database
     cmds:
       - docker stop ledgerdb-postgresql
-      - docker rm ledgerdb-postgesql
+      - docker rm ledgerdb-postgresql

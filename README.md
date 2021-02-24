@@ -20,22 +20,19 @@ A `Brewfile` is checked into this repo for easy setup. If you add to this list, 
 $ brew bundle
 ```
 
-Start the kubernetes environment:
+**Run the app**:
 
-```shell
-$ task k8s:start
-```
-
-**Database**: [PostgreSQL][postgresql].
-
-Deploy a new empty database on your local kubernetes:
-
-```shell
-$ task db:deploy
-$ kubectl get pods -w # watch cluster come up
-$ task db:shell # access database shell
-```
-
+1. Start docker ( OSX: `open -a Docker` )
+2. Deploy a new database on docker
+  ```shell
+  $ task db:start
+  ```
+3. Start the web server
+  ```shell
+  $ task web:start
+  ```
+4. Ensure environment file is correct `web/.env`
+5. Navigate to the localhost:{port} printed in the console
 ## Testing
 
 **Feature Testing**
