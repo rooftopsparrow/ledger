@@ -8,39 +8,36 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
+
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/joho/godotenv"
 	"msudenver.edu/ledger/db"
 	"msudenver.edu/ledger/repos"
-	"time"
-	jwt "github.com/dgrijalva/jwt-go"
 )
 
 // UserInfo form fields.
 type UserInfo struct {
 	Email    string
-	Name     string `json:"name"`
-	Password string `json:"password"`
-	
+	Name     string
+	Password string
 }
 
 var repo *repos.Repo
+var signKey = []byte("")
 
 func main() {
-
 	err := godotenv.Load()
 	if err != nil {
 		panic(err)
 	}
+
 	database := db.Init()
 	repo = repos.CreateRepo(database)
 	if err := repo.CreateSchema(database); err != nil {
 		panic(err)
 	}
 
-
-var signKey = []byte("")
-
-func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fs)
 
@@ -52,7 +49,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", nil)
 }
 
 func registerBtn(w http.ResponseWriter, r *http.Request) {
@@ -78,26 +75,28 @@ func registerBtn(w http.ResponseWriter, r *http.Request) {
 	// Display user entered name & email in browser.
 	fmt.Fprintf(w, str)
 
-	// fmt.Println("password:", r.Form["password"])
-
-	tokenString, err := GenerateJWT(details)
+	tokenString, err := GenerateJWT(user)
 	if err != nil {
 		fmt.Println("Error creating JWT.")
 	}
 	fmt.Println(tokenString)
+
 }
 
 // GenerateJWT ...
-func GenerateJWT(usr UserInfo) (string, error) {
+func GenerateJWT(usr *repos.User) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
-	claims["authorized"] = true
-	claims["user"] = usr.Name
-	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
+	claims["id"] = usr.ID
+	claims["user"] = usr.FullName
+	claims["iat"] = time.Now().Unix()
+	claims["exp"] = time.Now().Add(time.Minute * 60).Unix()
 
-	signKey = []byte(usr.Password)
-	
+	// I think this is in the wrong place/incorrect usage (Brian 2.23.21)
+	// Nav to: https://jwt.io/  paste tokenString in text field.
+	signKey = []byte("supersecret")
+
 	tokenString, err := token.SignedString(signKey)
 	if err != nil {
 		return "", err
