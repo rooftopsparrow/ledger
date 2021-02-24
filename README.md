@@ -12,6 +12,7 @@ Install the following tooling:
 3. [minikube][] - local kubernetes development instance ( will install kubectl as well )
 4. [kubectl][] - kubernetes controller
 5. [helm][] - kubernetes package manager
+6. [nodejs][] - javascript runtime for frontend tooling
 
 If you are using homebrew for [MacOS](https://brew.sh) or [Linux](https://docs.brew.sh/Homebrew-on-Linux),
 A `Brewfile` is checked into this repo for easy setup. If you add to this list, please update the `Brewfile`
@@ -46,3 +47,4 @@ Feature acceptance testing is done via [godog](https://github.com/cucumber/godog
 [kubectl]: https://kubernetes.io/docs/tasks/tools/install-kubectl/
 [postgresql]: https://www.postgresql.org
 [helm]: https://helm.sh
+[nodejs]: https://nodejs.org
