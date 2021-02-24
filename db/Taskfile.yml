@@ -61,8 +61,3 @@ tasks:
     cmds:
       - docker stop ledgerdb-postgresql
       - docker rm ledgerdb-postgesql
-
-  migrate:
-    desc: Run schema migrations
-    cmds:
-      - go run migrations/*.go migrate
