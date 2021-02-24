@@ -11,7 +11,7 @@ import (
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/joho/godotenv"
+	_ "github.com/joho/godotenv/autoload"
 	"msudenver.edu/ledger/db"
 	"msudenver.edu/ledger/repos"
 )
@@ -19,23 +19,19 @@ import (
 // UserInfo form fields.
 type UserInfo struct {
 	Email    string
-	Name     string
-	Password string
+	Name     string `json:"name"`
+	Password string `json:"password"`
 }
 
 var repo *repos.Repo
 var signKey = []byte("")
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		panic(err)
-	}
 
 	database := db.Init()
 	repo = repos.CreateRepo(database)
 	if err := repo.CreateSchema(database); err != nil {
-		panic(err)
+		log.Fatal("Unable to create schemas", err)
 	}
 
 	fs := http.FileServer(http.Dir("./static"))
