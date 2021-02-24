@@ -1,0 +1,16 @@
+{
+  "name": "ledger-ui",
+  "version": "1.0.0",
+  "description": "Frontend for Ledger",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jonathan Nicholson <jonathan.nicholson@protectwise.com>",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "snowpack": "^3.0.13"
+  }
+}
