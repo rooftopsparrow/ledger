@@ -8,3 +8,13 @@ tasks:
     desc: Run the webserver
     cmds:
       - go run .
+
+  dev:
+    desc: Run the ui development server
+    cmds:
+      - npm start
+
+  build:
+    desc: Build the ui application
+    cmds:
+      - npm run build
