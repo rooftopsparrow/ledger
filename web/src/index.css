@@ -1,0 +1,45 @@
+:root {
+  /* Theme 1 */
+  --byzantium: #820263ff;
+  --dogwood-rose: #d90368ff;
+  --platinum: #eadedaff;
+  --space-cadet: #2e294eff;
+  --cyber-yellow: #ffd400ff;
+
+  /* Theme 2 */
+  --vermilion: #c84630ff;
+  --pastel-pink: #d4a0a7ff;
+  --platinum: #e3e3e3ff;
+  --battleship-grey: #898989ff;
+  --forest-green-crayola: #5da271ff;
+
+  /* Theme 3 */
+  --usafa-blue: #26547cff;
+  --paradise-pink: #ef476fff;
+  --orange-yellow-crayola: #ffd166ff;
+  --caribbean-green: #06d6a0ff;
+  --white: #fcfcfcff;
+
+  /* Theme 4 */
+  --rich-black-fogra-39: #050505ff;
+  --blue-ryb: #004fffff;
+  --maximum-blue: #31afd4ff;
+  --red-violet-color-wheel: #902d41ff;
+  --rose: #ff007fff;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--white);
+  color: var(--rich-black-fogra-39);
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
