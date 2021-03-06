@@ -12,4 +12,6 @@ require (
 	github.com/gorilla/securecookie v1.1.1
 	github.com/icrowley/fake v0.0.0-20180203215853-4178557ae428
 	github.com/joho/godotenv v1.3.0
+	github.com/labstack/echo v3.3.10+incompatible // indirect
+	github.com/labstack/echo/v4 v4.2.0 // indirect
 )
