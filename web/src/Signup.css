@@ -1,0 +1,40 @@
+#ledger {
+    margin: auto 21%;
+}
+
+#signup {
+    width: 96%;
+    margin-left: 2%;
+    margin-right: 2%;
+}
+
+h1 {
+    color: var(--caribbean-green)
+}
+
+form {
+    flex: 1;
+    flex-direction: column;
+}
+
+button {
+    background-color: var(--caribbean-green);
+    border: 0;
+    color: var(--white);
+    margin-top: 20px;
+    padding: 1rem 2rem;
+    width: 100%;
+}
+
+button:hover {
+    border-left: 1px;
+    border-right-color: var(--dogwood-rose);
+}
+
+label {
+    display: block;
+}
+
+label > input {
+    width: 40%
+}
