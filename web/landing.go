@@ -157,3 +157,21 @@ func create_link_token(c *gin.Context) {
 	  "link_token": linkToken,
 	})
   }
+
+func getAccessToken(c *gin.Context) {
+	publicToken := c.PostForm("public_token")
+	response, err := client.ExchangePublicToken(publicToken)
+	accessToken = response.AccessToken
+	itemID = response.ItemID
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Println("public token: " + publicToken)
+	fmt.Println("access token: " + accessToken)
+	fmt.Println("item ID: " + itemID)
+	c.JSON(http.StatusOK, gin.H{
+		"access_token": accessToken,
+		"item_id":      itemID,
+	})
+}
