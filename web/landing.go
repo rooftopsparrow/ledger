@@ -10,12 +10,26 @@ import (
 	"net/http"
 	"time"
 
+
 	jwt "github.com/dgrijalva/jwt-go"
 	_ "github.com/joho/godotenv/autoload"
 	"msudenver.edu/ledger/db"
 	"msudenver.edu/ledger/repos"
+    "os"
+
+    "github.com/plaid/plaid-go/plaid"
+    "github.com/gin-gonic/gin"
+
 )
 
+var (
+	PLAID_CLIENT_ID     = os.Getenv("PLAID_CLIENT_ID")
+	PLAID_SECRET        = os.Getenv("PLAID_SECRET")
+	PLAID_PRODUCTS      = os.Getenv("PLAID_PRODUCTS")
+	PLAID_COUNTRY_CODES = os.Getenv("PLAID_COUNTRY_CODES")
+)
+var accessToken string
+var itemID string
 // UserInfo form fields.
 type UserInfo struct {
 	Email    string
@@ -26,7 +40,20 @@ type UserInfo struct {
 var repo *repos.Repo
 var signKey = []byte("")
 
+var clientOptions = plaid.ClientOptions{
+    os.Getenv("PLAID_CLIENT_ID"),
+    os.Getenv("PLAID_SECRET"),
+    plaid.Sandbox, // Available environments are Sandbox, Development, and Production
+    &http.Client{}, // This parameter is optional
+}
+
+var client, err = plaid.NewClient(clientOptions)
+
 func main() {
+	//r := gin.Default()
+	//r.POST("/create_link_token", create_link_token)
+	//r.GET("/get_access_token", get_access_token)
+	//r.Run()
 
 	database := db.Init()
 	repo = repos.CreateRepo(database)
@@ -49,6 +76,8 @@ func main() {
 }
 
 func registerBtn(w http.ResponseWriter, r *http.Request) {
+
+	create_link_token()
 
 	details := UserInfo{
 		Email:    r.FormValue("email"),
@@ -98,4 +127,53 @@ func GenerateJWT(usr *repos.User) (string, error) {
 		return "", err
 	}
 	return tokenString, nil
+}
+
+func create_link_token() {
+
+	// Create a link_token for the given user
+	linkTokenResp, err := client.CreateLinkToken(plaid.LinkTokenConfigs{
+		User: &plaid.LinkTokenUser{
+		  ClientUserID:             "123-test-user-id",
+		},
+		ClientName:            "My App",
+		Products:              []string{"auth", "transactions"},
+		CountryCodes:          []string{"US"},
+		Language:              "en",
+		Webhook:               "https://webhook-uri.com",
+		LinkCustomizationName: "default",
+		AccountFilters: &map[string]map[string][]string{
+		  "depository": map[string][]string{
+			"account_subtypes": []string{"checking", "savings"},
+		  },
+		},
+	  })
+	linkToken := linkTokenResp.LinkToken
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(linkToken)
+
+	// Send the data to the client
+	//c.JSON(http.StatusOK, gin.H{
+	//  "link_token": linkToken,
+	//})
+  }
+
+func getAccessToken(c *gin.Context) {
+	publicToken := c.PostForm("public_token")
+	response, err := client.ExchangePublicToken(publicToken)
+	accessToken = response.AccessToken
+	itemID = response.ItemID
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Println("public token: " + publicToken)
+	fmt.Println("access token: " + accessToken)
+	fmt.Println("item ID: " + itemID)
+	c.JSON(http.StatusOK, gin.H{
+		"access_token": accessToken,
+		"item_id":      itemID,
+	})
 }
