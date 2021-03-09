@@ -18,6 +18,7 @@ import (
     "os"
 
     "github.com/plaid/plaid-go/plaid"
+    "github.com/gin-gonic/gin"
 
 )
 
@@ -49,6 +50,10 @@ var clientOptions = plaid.ClientOptions{
 var client, err = plaid.NewClient(clientOptions)
 
 func main() {
+	//r := gin.Default()
+	//r.POST("/create_link_token", create_link_token)
+	//r.GET("/get_access_token", get_access_token)
+	//r.Run()
 
 	database := db.Init()
 	repo = repos.CreateRepo(database)
@@ -121,3 +126,34 @@ func GenerateJWT(usr *repos.User) (string, error) {
 	}
 	return tokenString, nil
 }
+
+func create_link_token(c *gin.Context) {
+
+	// Create a link_token for the given user
+	linkTokenResp, err := client.CreateLinkToken(plaid.LinkTokenConfigs{
+		User: &plaid.LinkTokenUser{
+		  ClientUserID:             "123-test-user-id",
+		},
+		ClientName:            "My App",
+		Products:              []string{"auth", "transactions"},
+		CountryCodes:          []string{"US"},
+		Language:              "en",
+		Webhook:               "https://webhook-uri.com",
+		LinkCustomizationName: "default",
+		AccountFilters: &map[string]map[string][]string{
+		  "depository": map[string][]string{
+			"account_subtypes": []string{"checking", "savings"},
+		  },
+		},
+	  })
+	linkToken := linkTokenResp.LinkToken
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(linkToken)
+
+	// Send the data to the client
+	c.JSON(http.StatusOK, gin.H{
+	  "link_token": linkToken,
+	})
+  }
