@@ -19,9 +19,16 @@ import (
 
     "github.com/plaid/plaid-go/plaid"
 
-
 )
 
+var (
+	PLAID_CLIENT_ID     = os.Getenv("PLAID_CLIENT_ID")
+	PLAID_SECRET        = os.Getenv("PLAID_SECRET")
+	PLAID_PRODUCTS      = os.Getenv("PLAID_PRODUCTS")
+	PLAID_COUNTRY_CODES = os.Getenv("PLAID_COUNTRY_CODES")
+)
+var accessToken string
+var itemID string
 // UserInfo form fields.
 type UserInfo struct {
 	Email    string
