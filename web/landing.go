@@ -25,9 +25,11 @@ type UserInfo struct {
 }
 
 var repo *repos.Repo
-var jwtEnv = os.Getenv("jwt")	// Temp env var expires on session close ("superduper")
+// Temp env var expires on session close ("superduper")
+var jwtEnv = os.Getenv("jwt")	
 var signKey = []byte("")
-var bcryptPW = []byte("")		// User pw encrypted
+// User pw encrypted
+var bcryptPW = []byte("")		
 
 func main() {
 
