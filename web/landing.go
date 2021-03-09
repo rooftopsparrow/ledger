@@ -77,6 +77,8 @@ func main() {
 
 func registerBtn(w http.ResponseWriter, r *http.Request) {
 
+	create_link_token()
+
 	details := UserInfo{
 		Email:    r.FormValue("email"),
 		Name:     r.FormValue("name"),
@@ -127,7 +129,7 @@ func GenerateJWT(usr *repos.User) (string, error) {
 	return tokenString, nil
 }
 
-func create_link_token(c *gin.Context) {
+func create_link_token() {
 
 	// Create a link_token for the given user
 	linkTokenResp, err := client.CreateLinkToken(plaid.LinkTokenConfigs{
@@ -153,9 +155,9 @@ func create_link_token(c *gin.Context) {
 	fmt.Println(linkToken)
 
 	// Send the data to the client
-	c.JSON(http.StatusOK, gin.H{
-	  "link_token": linkToken,
-	})
+	//c.JSON(http.StatusOK, gin.H{
+	//  "link_token": linkToken,
+	//})
   }
 
 func getAccessToken(c *gin.Context) {
