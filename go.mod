@@ -21,4 +21,6 @@ require (
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83 // indirect
 	golang.org/x/sys v0.0.0-20210308170721-88b6017d0656 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	github.com/labstack/echo v3.3.10+incompatible // indirect
+	github.com/labstack/echo/v4 v4.2.0 // indirect
 )
