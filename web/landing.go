@@ -10,10 +10,16 @@ import (
 	"net/http"
 	"time"
 
+
 	jwt "github.com/dgrijalva/jwt-go"
 	_ "github.com/joho/godotenv/autoload"
 	"msudenver.edu/ledger/db"
 	"msudenver.edu/ledger/repos"
+    "os"
+
+    "github.com/plaid/plaid-go/plaid"
+
+
 )
 
 // UserInfo form fields.
@@ -25,6 +31,15 @@ type UserInfo struct {
 
 var repo *repos.Repo
 var signKey = []byte("")
+
+var clientOptions = plaid.ClientOptions{
+    os.Getenv("PLAID_CLIENT_ID"),
+    os.Getenv("PLAID_SECRET"),
+    plaid.Sandbox, // Available environments are Sandbox, Development, and Production
+    &http.Client{}, // This parameter is optional
+}
+
+var client, err = plaid.NewClient(clientOptions)
 
 func main() {
 
