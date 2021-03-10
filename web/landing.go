@@ -31,7 +31,7 @@ var repo *repos.Repo
 var jwtEnv = os.Getenv("jwt")
 var signKey = []byte("")
 
-// User pw encrypted
+// User pw byte slice
 var bcryptPW = []byte("")
 
 func main() {
@@ -64,8 +64,10 @@ func registerBtn(w http.ResponseWriter, r *http.Request) {
 		Password: r.FormValue("password"),
 	}
 
+	// Hash user password. 
 	encryptPassword(details.Password)
 
+	// *** TODO: Hash pw added to CreateUser/db ****
 	user, err := repo.Users.CreateUser(details.Name, details.Email)
 	if err != nil {
 		panic(err)
@@ -81,16 +83,17 @@ func registerBtn(w http.ResponseWriter, r *http.Request) {
 	// Display user entered name & email in browser.
 	fmt.Fprintf(w, str)
 
-	// tokenString, err := GenerateJWT(user)
-	// if err != nil {
-	// 	fmt.Println("Error creating JWT.")
-	// }
-	// fmt.Println(tokenString)
+	tokenString, err := GenerateJWT(user)
+	if err != nil {
+		fmt.Println("Error creating JWT.")
+	}
+	// Out jwt
+	fmt.Println("\nJWT: " + tokenString)
 
 }
 
 /*
- encryptPassword() & confirmPassword()
+ encryptPassword() & confirmPassword() funcs
  Ref: https://stackoverflow.com/questions/23259586/bcrypt-password-hashing-in-golang-compatible-with-node-js
 */
 func encryptPassword(password string) string {
@@ -103,9 +106,9 @@ func encryptPassword(password string) string {
 	}
 
 	// Out hashed pw
-	fmt.Println("HASH: " + string(hashedPassword))
+	fmt.Println("HASH'D PW: " + string(hashedPassword) + "\n")
 
-	// Test hash validation. 
+	// Test hash validation, nil = match
 	confirmPassword(hashedPassword)
 
 	return string(hashedPassword)
@@ -114,7 +117,8 @@ func encryptPassword(password string) string {
 // Compare password to db pw hash record (login pw validation).
 func confirmPassword(hash []byte) {
 	err := bc.CompareHashAndPassword(hash, bcryptPW)
-	fmt.Println(err) // nil means it is a match
+	fmt.Print("Confirm PW (nil if match): ")
+	fmt.Println(err) 
 }
 
 // GenerateJWT ...
