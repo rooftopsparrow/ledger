@@ -1,13 +1,20 @@
 import React from 'react'
 // import Login from './Login.jsx'
 import Signup from './Signup'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
 function App () {
   return (
-    <div id="ledger">
-      {/* <Login /> */}
-      <Signup />
-    </div>
+    <Router>
+      <main id="ledger">
+        {/* <Login /> */}
+          <Switch>
+            <Route path="/signup">
+              <Signup />
+            </Route>
+          </Switch>
+      </main>
+    </Router>
   )
 }
 

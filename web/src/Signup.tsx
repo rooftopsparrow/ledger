@@ -72,7 +72,7 @@ export default function Signup () {
           <label htmlFor="confirm">Confirm Password</label>
           <input type="password" id="confirm" name="confirm" value={confirm} onChange={ e => setConfirm(e.target.value) } required />
         </fieldset>
-        <button type="submit" disabled={isSubmitting}>
+        <button id="signup_submit" type="submit" disabled={isSubmitting}>
           { isSubmitting ? 'Signing up...' : 'Create Account' }
         </button>
         {

@@ -1,44 +1,52 @@
 #ledger {
-    margin: auto 21%;
-}
-
-#create-account {
-    width: 96%;
-    margin-left: 2%;
-    margin-right: 2%;
+    margin: auto 35%;
 }
 
 h1 {
-    color: var(--caribbean-green)
+    color: var(--caribbean-green);
+    font-size: 4em;
+    margin: 0.67rem;
+    text-align: center;
+}
+
+header {
+    text-align: center;
+}
+
+fieldset {
+    border-color: var(--caribbean-green);
+}
+
+h1:hover {
+    color: var(--orange-yellow-crayola);
+    cursor: default;
 }
 
 label {
-    width: 150px;
-    display: block;
-}
-
-label {
-    color: var(--rose);
+    color: var(--caribbean-green);
     display: block;
     font-weight: bold;
     text-align: left;
+    padding-bottom: 10px;
+    padding-top: 10px;
 }
 
 input {
-    display: block;
-    float: none;
+    border: none;
+    padding: 0.6rem;
+    width: 96%;
 }
 
-button {
+button#signup_submit {
     background-color: var(--caribbean-green);
     border: 0;
     color: var(--white);
     padding: 1rem 2rem;
     margin-top: 10px;
-    width: 100%;
+    width: 100%
 }
 
-button:hover {
+button#signup_submit:hover {
     border-left: 1px;
     background-color: var(--orange-yellow-crayola);
 }
