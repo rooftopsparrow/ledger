@@ -66,6 +66,7 @@ func main() {
 
 	// *** Stuck on displaying info in current page ***
 	http.HandleFunc("/welcome", registerBtn)
+	http.HandleFunc("/create_link_token", create_link_token)
 
 	log.Println("Listening on port :8080...")
 	err := http.ListenAndServe(":8080", nil)
@@ -77,7 +78,7 @@ func main() {
 
 func registerBtn(w http.ResponseWriter, r *http.Request) {
 
-	create_link_token()
+	// create_link_token()
 
 	details := UserInfo{
 		Email:    r.FormValue("email"),
@@ -129,7 +130,7 @@ func GenerateJWT(usr *repos.User) (string, error) {
 	return tokenString, nil
 }
 
-func create_link_token() {
+func create_link_token(w http.ResponseWriter, r *http.Request) {
 
 	// Create a link_token for the given user
 	linkTokenResp, err := client.CreateLinkToken(plaid.LinkTokenConfigs{
@@ -152,13 +153,15 @@ func create_link_token() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(linkToken)
+
+	println(linkToken)
+	fmt.Fprint(w, linkToken)
 
 	// Send the data to the client
 	//c.JSON(http.StatusOK, gin.H{
 	//  "link_token": linkToken,
 	//})
-  }
+}
 
 func getAccessToken(c *gin.Context) {
 	publicToken := c.PostForm("public_token")

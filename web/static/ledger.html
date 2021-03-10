@@ -19,10 +19,7 @@
 				method: 'POST',
 				credentials: "same-origin",
 			});
-
-			const responseJSON = await response.json();
-
-			return responseJSON.link_token;
+			return await response.text()
 		};
 		
 		const configs = {
