@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"time"
 
+	"encoding/json"
+
 
 	jwt "github.com/dgrijalva/jwt-go"
 	_ "github.com/joho/godotenv/autoload"
@@ -18,7 +20,8 @@ import (
     "os"
 
     "github.com/plaid/plaid-go/plaid"
-    "github.com/gin-gonic/gin"
+    //"github.com/gin-gonic/gin"
+
 
 )
 
@@ -35,6 +38,9 @@ type UserInfo struct {
 	Email    string
 	Name     string `json:"name"`
 	Password string `json:"password"`
+}
+type Access struct {
+	Token string `json:"public_token"`
 }
 
 var repo *repos.Repo
@@ -67,6 +73,8 @@ func main() {
 	// *** Stuck on displaying info in current page ***
 	http.HandleFunc("/welcome", registerBtn)
 	http.HandleFunc("/create_link_token", create_link_token)
+	http.HandleFunc("/get_access_token", getAccessToken)
+
 
 	log.Println("Listening on port :8080...")
 	err := http.ListenAndServe(":8080", nil)
@@ -163,20 +171,28 @@ func create_link_token(w http.ResponseWriter, r *http.Request) {
 	//})
 }
 
-func getAccessToken(c *gin.Context) {
-	publicToken := c.PostForm("public_token")
-	response, err := client.ExchangePublicToken(publicToken)
-	accessToken = response.AccessToken
-	itemID = response.ItemID
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+func getAccessToken(w http.ResponseWriter, r *http.Request) {
+
+	var req Access
+
+	errr := json.NewDecoder(r.Body).Decode(&req)
+	if errr != nil {
+		http.Error(w, err.Error(), 400)
 		return
 	}
-	fmt.Println("public token: " + publicToken)
+
+	response, err := client.ExchangePublicToken(req.Token)
+	accessToken = response.AccessToken
+	itemID = response.ItemID
+
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+	fmt.Println("public token: " + req.Token)
 	fmt.Println("access token: " + accessToken)
 	fmt.Println("item ID: " + itemID)
-	c.JSON(http.StatusOK, gin.H{
-		"access_token": accessToken,
-		"item_id":      itemID,
-	})
+
+	fmt.Fprint(w, accessToken)
+	fmt.Fprint(w, itemID)
 }
