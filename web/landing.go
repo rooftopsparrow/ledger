@@ -24,7 +24,15 @@ import (
 
 
 )
-
+type Item struct {
+	AvailableProducts     []string  `json:"available_products"`
+	BilledProducts        []string  `json:"billed_products"`
+	Error                 error     `json:"error"`
+	InstitutionID         string    `json:"institution_id"`
+	ItemID                string    `json:"item_id"`
+	Webhook               string    `json:"webhook"`
+	ConsentExpirationTime time.Time `json:"consent_expiration_time"`
+}
 var (
 	PLAID_CLIENT_ID     = os.Getenv("PLAID_CLIENT_ID")
 	PLAID_SECRET        = os.Getenv("PLAID_SECRET")
@@ -175,8 +183,8 @@ func getAccessToken(w http.ResponseWriter, r *http.Request) {
 
 	var req Access
 
-	errr := json.NewDecoder(r.Body).Decode(&req)
-	if errr != nil {
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
@@ -195,4 +203,28 @@ func getAccessToken(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprint(w, accessToken)
 	fmt.Fprint(w, itemID)
+
+	// Check if this item already exists
+	// GetItem retrieves an item associated with an access token.
+	// See https://plaid.com/docs/api/items/#itemget.
+	// itemResp, errrrr := client.GetItem(accessToken)
+	// item := itemResp.Item
+	// status := itemResp.Status
+	// if errrrr != nil {
+	// 	http.Error(w, errrrr.Error(), 400)
+	// 	return
+	// }
+
+	//fmt.Println("Item: %s" + item.Products)
+	//fmt.Println("Status: %s" + status["transactions"])
+
+	// Endpoint: /accounts/get
+	// GetAccounts retrieves accounts associated with an Item.
+	// See https://plaid.com/docs/api/accounts/.
+	responsee, err := client.GetAccounts(accessToken)
+	fmt.Println(responsee.Accounts)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
 }
