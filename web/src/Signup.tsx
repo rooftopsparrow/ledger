@@ -28,6 +28,7 @@ export async function signUp (user: UserForm): Promise<NewUser> {
   return data
 }
 
+
 export default function Signup () {
   // Form values
   const [fullName, setFullName] = useState('')

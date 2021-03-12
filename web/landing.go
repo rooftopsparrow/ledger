@@ -8,11 +8,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 
 	jwt "github.com/dgrijalva/jwt-go"
 	_ "github.com/joho/godotenv/autoload"
+	bc "golang.org/x/crypto/bcrypt"
 	"msudenver.edu/ledger/db"
 	"msudenver.edu/ledger/repos"
     "os"
@@ -38,7 +40,13 @@ type UserInfo struct {
 }
 
 var repo *repos.Repo
+
+// Temp env var expires on session close
+var jwtEnv = os.Getenv("jwt")
 var signKey = []byte("")
+
+// User pw byte slice
+var bcryptPW = []byte("")
 
 var clientOptions = plaid.ClientOptions{
     os.Getenv("PLAID_CLIENT_ID"),
@@ -86,6 +94,10 @@ func registerBtn(w http.ResponseWriter, r *http.Request) {
 		Password: r.FormValue("password"),
 	}
 
+	// Hash user password. 
+	encryptPassword(details.Password)
+
+	// *** TODO: Hash pw added to CreateUser/db ****
 	user, err := repo.Users.CreateUser(details.Name, details.Email)
 	if err != nil {
 		panic(err)
@@ -105,8 +117,38 @@ func registerBtn(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error creating JWT.")
 	}
-	fmt.Println(tokenString)
+	// Out jwt
+	fmt.Println("\nJWT: " + tokenString)
 
+}
+
+/*
+ encryptPassword() & confirmPassword() funcs
+ Ref: https://stackoverflow.com/questions/23259586/bcrypt-password-hashing-in-golang-compatible-with-node-js
+*/
+func encryptPassword(password string) string {
+	// Byte slice of User password to use bcrypt.
+	bcryptPW = []byte(password)
+	// Hashing the password with the default cost of 10
+	hashedPassword, err := bc.GenerateFromPassword(bcryptPW, bc.DefaultCost)
+	if err != nil {
+		panic(err)
+	}
+
+	// Out hashed pw
+	fmt.Println("HASH'D PW: " + string(hashedPassword) + "\n")
+
+	// Test hash validation, nil == match
+	confirmPassword(hashedPassword)
+
+	return string(hashedPassword)
+}
+
+// Compare password to db pw hash record (login pw validation).
+func confirmPassword(hash []byte) {
+	err := bc.CompareHashAndPassword(hash, bcryptPW)
+	fmt.Print("Confirm PW (nil if match): ")
+	fmt.Println(err) 
 }
 
 // GenerateJWT ...
@@ -119,9 +161,8 @@ func GenerateJWT(usr *repos.User) (string, error) {
 	claims["iat"] = time.Now().Unix()
 	claims["exp"] = time.Now().Add(time.Minute * 60).Unix()
 
-	// I think this is in the wrong place/incorrect usage (Brian 2.23.21)
 	// Nav to: https://jwt.io/  paste tokenString in text field.
-	signKey = []byte("supersecret")
+	var signKey = []byte(jwtEnv)
 
 	tokenString, err := token.SignedString(signKey)
 	if err != nil {
