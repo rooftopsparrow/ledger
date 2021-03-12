@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-dir: ./web
+        working-directory: ./web
 
     steps:
     - uses: actions/checkout@v2
