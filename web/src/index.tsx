@@ -5,17 +5,6 @@ import App from './App.jsx'
 import 'normalize.css'
 import './index.css'
 
-declare global  {
-  interface ImportMeta {
-    hot: {
-      accept(): void
-    }
-    env: {
-      MODE: 'development' | 'production'
-    }
-  }
-}
-
 async function main () {
 
   // Mock out the API for development
