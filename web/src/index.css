@@ -18,25 +18,23 @@
   --paradise-pink: #ef476fff;
   --orange-yellow-crayola: #ffd166ff;
   --caribbean-green: #06d6a0ff;
-  --white: #fcfcfcff;
-
-  /* Theme 4 */
-  --rich-black-fogra-39: #050505ff;
   --blue-ryb: #004fffff;
   --maximum-blue: #31afd4ff;
   --red-violet-color-wheel: #902d41ff;
   --rose: #ff007fff;
+  --white: #fcfcfcff;
+  --black: #050505ff;
 }
 
 body {
-  margin: 0;
+  line-height: 1.4;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--white);
-  color: var(--rich-black-fogra-39);
+  color: var(--black);
 }
 
 code {

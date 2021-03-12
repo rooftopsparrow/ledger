@@ -5,7 +5,7 @@ import './Login.css'
 function Login () {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  function handleSubmit(event) {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     console.log("User attempting to log in", email, password)
   }
