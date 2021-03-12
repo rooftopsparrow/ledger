@@ -11,7 +11,6 @@ import (
 	"github.com/cucumber/godog/colors"
 	"github.com/go-pg/pg/v10"
 	"github.com/icrowley/fake"
-	"github.com/joho/godotenv"
 	"msudenver.edu/ledger/db"
 	"msudenver.edu/ledger/repos"
 )
@@ -143,10 +142,6 @@ func aUsersBankAccountIsConnected() error {
 }
 
 func InitializeTestSuite(ctx *godog.TestSuiteContext) {
-	err := godotenv.Load()
-	if err != nil {
-		panic(err)
-	}
 }
 
 func InitializeScenario(ctx *godog.ScenarioContext) {
@@ -167,6 +162,7 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 		}
 	})
 
+	ctx.Step(`^a user\'s bank account is connected$`, aUsersBankAccountIsConnected)
 	ctx.Step(`^the user is new and wants to sign up$`, aUserDoesNotHaveAnAccountAndWantsToSignUp)
 	ctx.Step(`^the account has a balance of (-?\d+\.\d{2}) dollars$`, theAccountHasABalanceOfDollars)
 	ctx.Step(`^the user sees the account balance is (-?\d+\.\d{2}) dollars$`, theUserSeesTheAccountBalanceIsDollars)
@@ -191,11 +187,6 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 var opts = godog.Options{
 	Output: colors.Colored(os.Stdout),
 	Format: "progress", // can define default values
-}
-
-func init() {
-	godog.BindFlags("godog.", flag.CommandLine, &opts) // godog v0.10.0 and earlier
-	godog.BindCommandLineFlags("godog.", &opts)        // godog v0.11.0 (latest)
 }
 
 func TestMain(m *testing.M) {
