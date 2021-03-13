@@ -1,58 +1,37 @@
 import React, { useState } from 'react'
+import { Redirect } from "react-router-dom"
+import { useAuth } from './User'
 
 import './Signup.css'
 
-export interface UserForm {
-  fullName: string,
-  email: string,
-  password: string,
-  confirm: string,
-}
-
-export interface NewUser extends UserForm {
-  token: string
-}
-
 type SignupError = Error | null
-
-export async function signUp (user: UserForm): Promise<NewUser> {
-  const response = await fetch("/signup", {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(user)
-  })
-  let data = await response.json()
-  if (!response.ok) {
-    throw new Error(data.message)
-  }
-  return data
-}
-
 
 export default function Signup () {
   // Form values
+  const { user, signup } = useAuth()
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [signUpError, setSignUpError] = useState<SignupError>(null)
-  // submit handler 
+  // submit handler, bubble up the new user 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setIsSubmitting(true)
-    // const form = event.currentTarget
     try {
-      const result = await signUp({ fullName, email, password, confirm })
-      // TODO: do something
-      return result
+      await signup({ fullName, email, password, confirm })
     } catch (error) {
       setSignUpError(error)
     } finally {
       setIsSubmitting(false)
     }
   }
-  // 
+
+  if (user) {
+    return <Redirect to="/home" />
+  }
+
   return (
     <section id="create-account">
       <header>
@@ -74,7 +53,7 @@ export default function Signup () {
           <input type="password" id="confirm" name="confirm" value={confirm} onChange={ e => setConfirm(e.target.value) } required />
         </fieldset>
         <button id="signup_submit" type="submit" disabled={isSubmitting}>
-          { isSubmitting ? 'Signing up...' : 'Create Account' }
+          { isSubmitting ? 'Creating Account...' : 'Create Account' }
         </button>
         {
             signUpError
