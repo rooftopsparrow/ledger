@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Redirect } from "react-router-dom"
+import { Redirect, Link } from "react-router-dom"
 import { useAuth } from './User'
 
 type SignupError = Error | null
@@ -88,6 +88,13 @@ export default function Signup () {
                       disabled={isSubmitting}>
                 { isSubmitting ? 'Creating Account...' : 'Create Account' }
               </button>
+              <div className="text-center font-thin m-3 text-gray-400">
+                <p>Already have an account?
+                  <Link to="/login" className="text-green-600 px-2">
+                    Log In
+                  </Link>
+                </p>
+              </div>
             </div>
             {
                 signUpError

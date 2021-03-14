@@ -8,7 +8,7 @@ import { ProvideAuth } from './User'
 function App () {
   return (
     <ProvideAuth>
-      <main id="ledger">
+      <main id="ledger" className="bg-green-400 w-full h-screen">
         <Switch>
           <Route exact path="/">
             <Landing />
