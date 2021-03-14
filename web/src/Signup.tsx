@@ -31,21 +31,21 @@ export default function Signup () {
   }
 
   return (
-    <section className="flex items-center max-h-screen dark:bg-gray-900">
+    <section className="flex items-center max-h-screen">
       <div className="container mx-auto">
-        <div className="max-w-md mx-auto m-10 bg-white p-5 rounded-sm shadow-sm">
+        <div className="max-w-md mx-auto m-10 bg-white p-5 rounded-sm shadow-lg">
           <header className="text-center">
-            <h1 className="text-7xl font-serif text-green-500 hover:text-yellow-300 cursor-pointer font-semibold">
-              Ledger
+            <h1 className="text-7xl font-serif text-green-500 hover:text-yellow-300 font-semibold">
+              <Link to="/">Ledger</Link>
             </h1>
             <p className="font-thin text-md p-2">
-              Integrate envelope budgeting into your existing bank.
+              Integrated envelope budgeting for your existing bank
             </p>
           </header>
           <form id="signup" onSubmit={handleSubmit} className="m-7">
             <fieldset>
               <legend className="text-sm font-thin pb-3">
-                Sign Up for an Account
+                Create an Account
               </legend>
               <div className="mb-3">
                 <label htmlFor="fullName" className="block mb-2 text-sm text-gray-400">
@@ -83,18 +83,15 @@ export default function Signup () {
               </div>
             </fieldset>
             <div className="mt-3">
-              <button id="signup_submit" type="submit" tabIndex={1}
+              <button form="signup" id="signup_submit" type="submit"
                       className="bg-green-500 text-white w-full px-3 py-2 hover:bg-yellow-300"
                       disabled={isSubmitting}>
                 { isSubmitting ? 'Creating Account...' : 'Create Account' }
               </button>
-              <div className="text-center font-thin m-3 text-gray-400">
-                <p>Already have an account?
-                  <Link to="/login" className="text-green-600 px-2">
-                    Log In
-                  </Link>
-                </p>
-              </div>
+              <p className="text-center font-thin text-sm m-3">Already have an account? <Link to="/login" className="text-green-600 px-1">
+                  Log In
+                </Link>
+              </p>
             </div>
             {
                 signUpError

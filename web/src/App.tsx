@@ -1,7 +1,8 @@
 import React from 'react'
 import { Switch, Route } from 'react-router-dom'
-import Signup from './Signup'
 import Landing from './Landing'
+import Login from './Login'
+import Signup from './Signup'
 import Home from './Home'
 import { ProvideAuth } from './User'
 
@@ -15,6 +16,9 @@ function App () {
           </Route>
           <Route exact path="/signup">
             <Signup />
+          </Route>
+          <Route exact path="/login">
+            <Login />
           </Route>
           <Route path="/home">
             <Home />
