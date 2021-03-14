@@ -11,10 +11,11 @@ module.exports = {
     src: '/dist'
   },
   plugins: [
-    '@snowpack/plugin-typescript'
+    '@snowpack/plugin-typescript',
+    '@snowpack/plugin-postcss'
   ],
   routes: [
-    {"match": "routes", "src": ".*", "dest": "/index.html"}
+    { match: 'routes', src: '.*', dest: '/index.html' }
   ],
   packageOptions: {
     /* ... */
@@ -25,4 +26,4 @@ module.exports = {
   buildOptions: {
     /* ... */
   }
-};
+}

@@ -2,8 +2,6 @@ import React, { useState } from 'react'
 import { Redirect } from "react-router-dom"
 import { useAuth } from './User'
 
-import './Signup.css'
-
 type SignupError = Error | null
 
 export default function Signup () {
@@ -33,37 +31,75 @@ export default function Signup () {
   }
 
   return (
-    <section id="create-account">
-      <header>
-        <h1>Ledger</h1>
-        <p>
-          Integrate envelope budgeting into your existing bank.
-        </p>
-      </header>
-      <form id="signup" onSubmit={handleSubmit}>
-        <fieldset>
-          <legend>Sign Up for an Account</legend>
-          <label htmlFor="fullName">Name</label>
-          <input type="text" id="fullName" name="fullName" value={fullName} autoCorrect="off" autoComplete="off" autoCapitalize="off" onChange={ e => setFullName(e.target.value) } required />
-          <label htmlFor="email">Email</label>
-          <input type="email" id="email" name="email" autoComplete="email" autoCorrect="off" value={email} onChange={ e => setEmail(e.target.value)} required />
-          <label htmlFor="password">Password</label>
-          <input type="password" id="password" name="password" value={password} onChange={ e => setPassword(e.target.value) } required />
-          <label htmlFor="confirm">Confirm Password</label>
-          <input type="password" id="confirm" name="confirm" value={confirm} onChange={ e => setConfirm(e.target.value) } required />
-        </fieldset>
-        <button id="signup_submit" type="submit" disabled={isSubmitting}>
-          { isSubmitting ? 'Creating Account...' : 'Create Account' }
-        </button>
-        {
-            signUpError
-          ? 
-            <label form="signup">
-              <em>{signUpError.message}</em>
-            </label>
-          : null
-        }
-      </form>
+    <section className="flex items-center max-h-screen dark:bg-gray-900">
+      <div className="container mx-auto">
+        <div className="max-w-md mx-auto m-10 bg-white p-5 rounded-sm shadow-sm">
+          <header className="text-center">
+            <h1 className="text-7xl font-serif text-green-500 hover:text-yellow-300 cursor-pointer font-semibold">
+              Ledger
+            </h1>
+            <p className="font-thin text-md p-2">
+              Integrate envelope budgeting into your existing bank.
+            </p>
+          </header>
+          <form id="signup" onSubmit={handleSubmit} className="m-7">
+            <fieldset>
+              <legend className="text-sm font-thin pb-3">
+                Sign Up for an Account
+              </legend>
+              <div className="mb-3">
+                <label htmlFor="fullName" className="block mb-2 text-sm text-gray-400">
+                  Name
+                </label>
+                <input type="text" id="fullName" name="fullName"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-100 focus:border-indigo-300"
+                      value={fullName} autoCorrect="off" autoComplete="off" autoCapitalize="off"
+                      onChange={ e => setFullName(e.target.value) } required />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="email" className="block mb-2 text-sm text-gray-400">
+                  Email
+                </label>
+                <input type="email" id="email" name="email"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-100 focus:border-indigo-300"
+                      autoComplete="email" autoCorrect="off" value={email}
+                      onChange={ e => setEmail(e.target.value)} required />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="password" className="block mb-2 text-sm text-gray-400">
+                  Password
+                </label>
+                <input type="password" id="password" name="password"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-100 focus:border-indigo-300"
+                      value={password} onChange={ e => setPassword(e.target.value) } required />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="confirm" className="block mb-2 text-sm text-gray-400">
+                  Confirm Password
+                </label>
+                <input type="password" id="confirm" name="confirm"
+                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-100 focus:border-indigo-300"
+                       value={confirm} onChange={ e => setConfirm(e.target.value) } required />
+              </div>
+            </fieldset>
+            <div className="mt-3">
+              <button id="signup_submit" type="submit" tabIndex={1}
+                      className="bg-green-500 text-white w-full px-3 py-2 hover:bg-yellow-300"
+                      disabled={isSubmitting}>
+                { isSubmitting ? 'Creating Account...' : 'Create Account' }
+              </button>
+            </div>
+            {
+                signUpError
+              ? 
+                <label form="signup">
+                  <em>{signUpError.message}</em>
+                </label>
+              : null
+            }
+          </form>
+        </div>
+      </div>
     </section>
   )
 }

@@ -1,19 +1,18 @@
-:root {
-  /* Theme 1 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* :root {
   --byzantium: #820263ff;
   --dogwood-rose: #d90368ff;
   --platinum: #eadedaff;
   --space-cadet: #2e294eff;
   --cyber-yellow: #ffd400ff;
-
-  /* Theme 2 */
   --vermilion: #c84630ff;
   --pastel-pink: #d4a0a7ff;
   --platinum: #e3e3e3ff;
   --battleship-grey: #898989ff;
   --forest-green-crayola: #5da271ff;
-
-  /* Theme 3 */
   --usafa-blue: #26547cff;
   --paradise-pink: #ef476fff;
   --orange-yellow-crayola: #ffd166ff;
@@ -40,4 +39,4 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
-}
+} */

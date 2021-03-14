@@ -3,9 +3,6 @@ import ReactDOM from 'react-dom'
 import App from './App.jsx'
 import { BrowserRouter } from "react-router-dom";
 
-import 'normalize.css'
-import './index.css'
-
 async function main () {
 
   ReactDOM.render(
@@ -21,6 +18,12 @@ async function main () {
   // Learn more: https://snowpack.dev/concepts/hot-module-replacement
   if (import.meta.hot) {
     import.meta.hot.accept();
+  }
+
+  // Mock out the API for development
+  if (import.meta.env.MODE === 'development') {
+    const { worker } = await import('./mocks/api.js')
+    await worker.start() 
   }
 
 }
