@@ -52,7 +52,7 @@ export default function Signup () {
                   Name
                 </label>
                 <input type="text" id="fullName" name="fullName"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-100 focus:border-indigo-300"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-yellow-100"
                       value={fullName} autoCorrect="off" autoComplete="off" autoCapitalize="off"
                       onChange={ e => setFullName(e.target.value) } required />
               </div>
@@ -61,7 +61,7 @@ export default function Signup () {
                   Email
                 </label>
                 <input type="email" id="email" name="email"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-100 focus:border-indigo-300"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-yellow-100"
                       autoComplete="email" autoCorrect="off" value={email}
                       onChange={ e => setEmail(e.target.value)} required />
               </div>
@@ -70,7 +70,7 @@ export default function Signup () {
                   Password
                 </label>
                 <input type="password" id="password" name="password"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-100 focus:border-indigo-300"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-yellow-100"
                       value={password} onChange={ e => setPassword(e.target.value) } required />
               </div>
               <div className="mb-3">
@@ -78,7 +78,7 @@ export default function Signup () {
                   Confirm Password
                 </label>
                 <input type="password" id="confirm" name="confirm"
-                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-100 focus:border-indigo-300"
+                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-yellow-100"
                        value={confirm} onChange={ e => setConfirm(e.target.value) } required />
               </div>
             </fieldset>

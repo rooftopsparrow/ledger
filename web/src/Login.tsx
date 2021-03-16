@@ -30,7 +30,7 @@ function Login () {
                   Email
                 </label>
                 <input id="email" type="email" name="email" autoComplete="email"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-100 focus:border-indigo-300"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-yellow-100"
                       value={email} onChange={e => setEmail(e.target.value)} />
               </div>
               <div className="mb-3">
@@ -38,7 +38,7 @@ function Login () {
                   Password
                 </label>
                 <input type="password" name="password" value={password}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-100 focus:border-indigo-300"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-yellow-100"
                       onChange={e => setPassword(e.target.value)} />
               </div>
             </fieldset>
