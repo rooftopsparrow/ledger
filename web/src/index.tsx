@@ -20,12 +20,6 @@ async function main () {
     import.meta.hot.accept();
   }
 
-  // // Mock out the API for development
-  // if (import.meta.env.MODE === 'development') {
-  //   const { worker } = await import('./mocks/api.js')
-  //   await worker.start() 
-  // }
-
 }
 
 main()

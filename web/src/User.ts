@@ -25,6 +25,7 @@ export interface User {
 
 interface UserContext {
   user: User | null,
+  error: Error | null,
   signup: (form: SignupForm) => Promise<User>
   login: (form: LoginForm) => Promise<User>
   logout: () => Promise<void>
@@ -32,6 +33,7 @@ interface UserContext {
 
 function useAuthState(): UserContext {
   const [ user, setUser ] = useLocalStorage<User|null>(JWT_STORAGE, null)
+  const [ error, setError ] = useState<Error|null>(null)
   async function signup (form: SignupForm): Promise<User> {
     const response = await fetch('/signup', {
       method: 'POST',
@@ -69,6 +71,7 @@ function useAuthState(): UserContext {
 
   return {
     user,
+    error,
     signup,
     login,
     logout
@@ -79,6 +82,7 @@ const invalidContext = () => Promise.reject(new Error('Invalid Context'))
 
 export const userContext = createContext<UserContext>({
   user: null,
+  error: new Error('Invalid Context'),
   signup: invalidContext,
   login: invalidContext,
   logout: invalidContext

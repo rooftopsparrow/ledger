@@ -1,13 +1,30 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
+import { useAuth } from './User'
 
 function Login () {
+  const { user, login } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  const [isLoggingIn, setIsLoggingIn] = useState(false)
+  const [error, setError] = useState<Error|null>(null)
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    setIsLoggingIn(true)
     console.log("User attempting to log in", email, password)
+    try {
+      await login({ email, password })
+    } catch (err) {
+      setError(err)
+    } finally {
+      setIsLoggingIn(false)
+    }
   }
+
+  if (user) {
+    return <Redirect to="/home" />
+  }
+
   return (
     <section className="flex items-center max-h-screen">
       <div className="container mx-auto">
@@ -42,7 +59,7 @@ function Login () {
                       onChange={e => setPassword(e.target.value)} />
               </div>
             </fieldset>
-            <div>
+            <div className="mt-3">
               <button type="submit" id="login_submit" form="login"
                       className="bg-green-500 text-white w-full px-3 py-2 hover:bg-yellow-300"
                       disabled={false}>
