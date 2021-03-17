@@ -1,11 +1,13 @@
 import React from 'react'
+import { useAuth } from './User'
+import { Profile } from './Profile'
 
 export default function Home() {
-    return (
-        <div id="home_page">
-            <section>
-                <h1>Welcome to Ledger</h1>
-            </section>
-        </div>
-    )
+  const { user } = useAuth()
+  return (
+    <div id="home_page">
+      <section>
+      </section>
+    </div>
+  )
 }

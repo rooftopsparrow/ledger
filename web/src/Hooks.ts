@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { useParams, useLocation, useHistory, useRouteMatch } from 'react-router-dom'
 
 // https://usehooks.com/useLocalStorage/
+
 export function useLocalStorage<T>(key: string, initialValue: T): [T, (val: T) => void] {
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {

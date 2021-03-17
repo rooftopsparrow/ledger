@@ -35,7 +35,7 @@ function useAuthState(): UserContext {
   const [ user, setUser ] = useLocalStorage<User|null>(JWT_STORAGE, null)
   const [ error, setError ] = useState<Error|null>(null)
   async function signup (form: SignupForm): Promise<User> {
-    const response = await fetch('/signup', {
+    const response = await fetch('/api/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(user)
@@ -54,7 +54,7 @@ function useAuthState(): UserContext {
   }
 
   async function login(form: LoginForm): Promise<User> {
-    const response = await fetch('/login', {
+    const response = await fetch('/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form)
