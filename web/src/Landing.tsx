@@ -7,7 +7,7 @@ export default function Landing() {
   const { user } = useAuth()
 
   if (user) {
-    return <Redirect to="/home" />
+    return <Redirect to="/activity" />
   }
 
   return(
