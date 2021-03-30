@@ -1,7 +1,7 @@
 import { createElement, createContext, useContext, useState } from 'react'
 import { useLocalStorage } from './Hooks'
 
-const JWT_STORAGE = 'ledger-token'
+const STORAGE = 'ledger'
 
 export interface LoginForm {
   email: string,
@@ -32,10 +32,10 @@ interface UserContext {
 }
 
 function useAuthState(): UserContext {
-  const [ user, setUser ] = useLocalStorage<User|null>(JWT_STORAGE, null)
+  const [ user, setUser ] = useLocalStorage<User|null>(STORAGE, null)
   const [ error, setError ] = useState<Error|null>(null)
   async function signup (form: SignupForm): Promise<User> {
-    const response = await fetch('/api/signup', {
+    const response = await fetch('/api/welcome', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(user)

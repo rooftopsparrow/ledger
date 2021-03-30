@@ -3,7 +3,7 @@ import { Switch, Route, Redirect, RouteProps } from 'react-router-dom'
 import Landing from './Landing'
 import Login from './Login'
 import Signup from './Signup'
-import Home from './Home'
+import Activity from './Activity'
 import { ProvideAuth, useAuth } from './User'
 
 function PrivateRoute({children, ...rest}: RouteProps) {
@@ -31,9 +31,12 @@ function App () {
           <Route exact path="/login">
             <Login />
           </Route>
-          <PrivateRoute path="/home">
-            <Home />
-          </PrivateRoute>
+          {/* <PrivateRoute path="/account">
+            <Account />
+          </PrivateRoute> */}
+          <Route path="/activity">
+            <Activity />
+          </Route>
         </Switch>
       </main>
     </ProvideAuth>

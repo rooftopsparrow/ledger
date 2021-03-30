@@ -60,7 +60,7 @@ function Login () {
               </div>
             </fieldset>
             <div className="mt-3">
-              <button type="submit" id="login_submit" form="login"
+              <button type="submit" id="login-submit" form="login"
                       className="bg-green-500 text-white w-full px-3 py-2 hover:bg-yellow-300"
                       disabled={isLoggingIn}>
                 { isLoggingIn ? 'Logging In...' : 'Log In' }
