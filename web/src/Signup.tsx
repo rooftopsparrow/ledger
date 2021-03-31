@@ -83,7 +83,7 @@ export default function Signup () {
               </div>
             </fieldset>
             <div className="mt-3">
-              <button form="signup" id="signup_submit" type="submit"
+              <button form="signup" id="signup-submit" type="submit"
                       className="bg-green-500 text-white w-full px-3 py-2 hover:bg-yellow-300"
                       disabled={isSubmitting}>
                 { isSubmitting ? 'Creating Account...' : 'Create Account' }

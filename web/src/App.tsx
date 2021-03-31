@@ -1,10 +1,21 @@
 import React from 'react'
-import { Switch, Route } from 'react-router-dom'
+import { Switch, Route, Redirect, RouteProps } from 'react-router-dom'
 import Landing from './Landing'
 import Login from './Login'
 import Signup from './Signup'
-import Home from './Home'
-import { ProvideAuth } from './User'
+import Activity from './Activity'
+import { ProvideAuth, useAuth } from './User'
+
+function PrivateRoute({children, ...rest}: RouteProps) {
+  const { user } = useAuth()
+  return (
+    <Route {...rest}>
+      user
+      ? { children }
+      : <Redirect to='/login' />
+    </Route>
+  )
+}
 
 function App () {
   return (
@@ -20,8 +31,11 @@ function App () {
           <Route exact path="/login">
             <Login />
           </Route>
-          <Route path="/home">
-            <Home />
+          {/* <PrivateRoute path="/account">
+            <Account />
+          </PrivateRoute> */}
+          <Route path="/activity">
+            <Activity />
           </Route>
         </Switch>
       </main>
