@@ -4,6 +4,7 @@ import Landing from './Landing'
 import Login from './Login'
 import Signup from './Signup'
 import Activity from './Activity'
+import LinkAccount from './LinkAccount'
 import { ProvideAuth, useAuth } from './User'
 
 function PrivateRoute({children, ...rest}: RouteProps) {
@@ -36,6 +37,9 @@ function App () {
           </PrivateRoute> */}
           <Route path="/activity">
             <Activity />
+          </Route>
+          <Route path="/link">
+            <LinkAccount />
           </Route>
         </Switch>
       </main>
