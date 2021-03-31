@@ -23,7 +23,7 @@ func (r *UserRepo) CreateUser(name string,
 	user := &User{
 		FullName:  name,
 		Email:     email,
-		
+		PW:  	   password,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
