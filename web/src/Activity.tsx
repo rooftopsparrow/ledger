@@ -12,8 +12,8 @@ export default function Account() {
               Safe-to-Spend
             </span>
           </h2>
-          <ul className="inline-flex space-2">
-            <li id="available-balance" className="text-sm">
+          <ul className="inline-flex">
+            <li id="available-balance" className="text-sm ">
               <h3>$568.21 <span className="font-light text-xs text-gray-600">
                   available balance
                 </span>
@@ -23,8 +23,12 @@ export default function Account() {
               <h3>$20.00 <span className="font-light text-xs text-gray-600">
                   scheduled activity
                 </span>
-                </h3></li>
-            <li><p>$309.78 <span>in envelopes</span></p></li>
+              </h3>
+            </li>
+            <li id="scheduled-activity" className="text-sm">
+              <h3>$309.78 <span className="font-light text-xs text-gray-600"> in envelopes</span>
+              </h3>
+            </li>
           </ul>
         </div>
         <div>
@@ -64,7 +68,7 @@ export default function Account() {
                 <li>
                   <div className="grid grid-cols-5 gap-x-5 row-">
                     <span className="vendor-name font-bold col-span-3">
-                      Bottemless
+                      Bottomless
                     </span>
                     <span className="col-span-2 text-right">
                       -$31.24
