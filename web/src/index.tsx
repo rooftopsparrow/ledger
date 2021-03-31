@@ -1,21 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './App.jsx'
-
-import 'normalize.css'
-import './index.css'
+import { BrowserRouter } from "react-router-dom";
 
 async function main () {
 
-  // Mock out the API for development
-  if (import.meta.env.MODE === 'development') {
-    const { worker } = await import('./mocks/api.js')
-    await worker.start() 
-  }
-
   ReactDOM.render(
     <React.StrictMode>
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </React.StrictMode>,
     document.getElementById('root')
   )
