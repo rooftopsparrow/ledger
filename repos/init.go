@@ -16,7 +16,7 @@ var tables = []interface{}{
 type Repo struct {
 	db    *pg.DB
 	Users interface {
-		CreateUser(name string, email string) (*User, error)
+		CreateUser(name string, email string, password string) (*User, error)
 	}
 	Accounts interface {
 	}

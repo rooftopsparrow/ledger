@@ -15,11 +15,15 @@ type UserRepo struct {
 }
 
 // CreateUser inserts new user records
-func (r *UserRepo) CreateUser(name string, email string) (*User, error) {
+func (r *UserRepo) CreateUser(name string, 
+								email string,
+								password string,
+								) (*User, error) {
 	now := time.Now()
 	user := &User{
 		FullName:  name,
 		Email:     email,
+		
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
@@ -41,6 +45,7 @@ type User struct {
 	ID        int64     `json:"-"`
 	FullName  string    `pg:",notnull"`
 	Email     string    `pg:",notnull,unique"`
+	PW 		  string 	`pg:",notnull,unique"`
 	CreatedAt time.Time `pg:"default:now()"`
 	UpdatedAt time.Time
 	DeletedAt time.Time `pg:",soft_delete"`

@@ -88,10 +88,14 @@ func main() {
 		}
 
 		server.Logger.Infof("got form %v", details)
+
 		// Hash user password.
-		encryptPassword(details.Password)
 		// *** TODO: Hash pw added to CreateUser/db ****
-		user, err := repo.Users.CreateUser(details.Name, details.Email)
+		pwEncyrpted := encryptPassword(details.Password)
+
+		user, err := repo.Users.CreateUser(details.Name, 
+										  	details.Email,
+											  pwEncyrpted)
 		if err != nil {
 			return err
 		}
