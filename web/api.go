@@ -149,6 +149,17 @@ func main() {
 		c.Logger().Info("access token: ", accessToken)
 		c.Logger().Infof("item ID: %s", itemID)
 
+		println(accessToken)
+		println(itemID)
+
+		plaid, err := repo.Plaids.CreatePlaid(accessToken, itemID)
+		if err != nil {
+			println("Theres an error sir.")
+			println(err)
+			return err
+		}
+		println(plaid)
+
 		// Check if this item already exists
 		// GetItem retrieves an item associated with an access token.
 		// See https://plaid.com/docs/api/items/#itemget.
@@ -171,9 +182,13 @@ func main() {
 			return c.String(http.StatusBadGateway, err.Error())
 		}
 
+		fmt.Println("Got accounts: ", responsee.Accounts)
+
 		c.Logger().Infof("Got accounts: %v", responsee.Accounts)
 		return c.String(http.StatusCreated, accessToken)
 	})
+
+
 
 	// Start the server
 	server.Logger.Fatal(server.Start(":8080"))
