@@ -10,9 +10,11 @@ function PrivateRoute({children, ...rest}: RouteProps) {
   const { user } = useAuth()
   return (
     <Route {...rest}>
-      user
-      ? { children }
-      : <Redirect to='/login' />
+      {
+        user
+        ? children
+        : <Redirect to='/login' />
+      }
     </Route>
   )
 }

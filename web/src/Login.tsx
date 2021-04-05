@@ -22,7 +22,7 @@ function Login () {
   }
 
   if (user) {
-    return <Redirect to="/home" />
+    return <Redirect to="/activity" />
   }
 
   return (

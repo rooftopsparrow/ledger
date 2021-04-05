@@ -18,7 +18,7 @@ export default function Signup () {
     event.preventDefault()
     setIsSubmitting(true)
     try {
-      await signup({ fullName, email, password, confirm })
+      await signup({ name: fullName, email, password, confirm })
     } catch (error) {
       setSignUpError(error)
     } finally {
@@ -27,7 +27,7 @@ export default function Signup () {
   }
 
   if (user) {
-    return <Redirect to="/home" />
+    return <Redirect to="/activity" />
   }
 
   return (
