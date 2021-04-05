@@ -152,13 +152,7 @@ func main() {
 		println(accessToken)
 		println(itemID)
 
-		plaid, err := repo.Plaids.CreatePlaid(accessToken, itemID)
-		if err != nil {
-			println("Theres an error sir.")
-			println(err)
-			return err
-		}
-		println(plaid)
+		repo.Plaids.CreatePlaid(accessToken, itemID)
 
 		// Check if this item already exists
 		// GetItem retrieves an item associated with an access token.
