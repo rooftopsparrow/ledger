@@ -105,7 +105,6 @@ func main() {
 	})
 
 	server.POST("/create_link_token", func(c echo.Context) error {
-		// Create a link_token for the given user
 		linkTokenResp, err := client.CreateLinkToken(plaid.LinkTokenConfigs{
 			User: &plaid.LinkTokenUser{
 				ClientUserID: "123-test-user-id",
@@ -164,10 +163,6 @@ func main() {
 
 		//fmt.Println("Item: %s" + item.Products)
 		//fmt.Println("Status: %s" + status["transactions"])
-
-		// Endpoint: /accounts/get
-		// GetAccounts retrieves accounts associated with an Item.
-		// See https://plaid.com/docs/api/accounts/.
 
 		accountsResponse, err := client.GetAccounts(accessToken)
 		if err != nil {
