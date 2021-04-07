@@ -149,9 +149,6 @@ func main() {
 		c.Logger().Info("access token: ", accessToken)
 		c.Logger().Infof("item ID: %s", itemID)
 
-		println(accessToken)
-		println(itemID)
-
 		repo.Plaids.CreatePlaid(accessToken, itemID)
 
 		// Check if this item already exists
@@ -171,12 +168,11 @@ func main() {
 		// Endpoint: /accounts/get
 		// GetAccounts retrieves accounts associated with an Item.
 		// See https://plaid.com/docs/api/accounts/.
+
 		responsee, err := client.GetAccounts(accessToken)
 		if err != nil {
 			return c.String(http.StatusBadGateway, err.Error())
 		}
-
-		fmt.Println("Got accounts: ", responsee.Accounts)
 
 		c.Logger().Infof("Got accounts: %v", responsee.Accounts)
 		return c.String(http.StatusCreated, accessToken)
