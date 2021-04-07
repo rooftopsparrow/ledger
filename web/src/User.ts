@@ -9,7 +9,7 @@ export interface LoginForm {
 }
 
 export interface SignupForm {
-  fullName: string,
+  name: string,
   email: string,
   password: string,
   confirm: string,
@@ -34,19 +34,24 @@ interface UserContext {
 function useAuthState(): UserContext {
   const [ user, setUser ] = useLocalStorage<User|null>(STORAGE, null)
   const [ error, setError ] = useState<Error|null>(null)
-  async function signup (form: SignupForm): Promise<User> {
+  async function signup (u: SignupForm): Promise<User> {
+    const form = new FormData()
+    for (let [key, value] of Object.entries(u)) {
+      form.append(key, value)
+    }
     const response = await fetch('/api/welcome', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(user)
+      body: form
     })
-    let data = await response.json()
+    let token = await response.text()
     if (!response.ok) {
-      throw new Error(data.message)
+      // setError(token)
+      throw new Error(token)
     }
     // TODO Verify data is actually of type User
-    setUser(data)
-    return data as User
+    let user: User = { token, fullName: u.name, email: u.email }
+    setUser(user)
+    return user
   }
 
   async function logout() {

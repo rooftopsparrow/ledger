@@ -13,6 +13,7 @@ import (
 	bc "golang.org/x/crypto/bcrypt"
 	"msudenver.edu/ledger/db"
 	"msudenver.edu/ledger/repos"
+	"encoding/json"
 )
 
 type Item struct {
@@ -135,7 +136,7 @@ func main() {
 	server.POST("/get_access_token", func(c echo.Context) error {
 
 		req := new(Access)
-		err := c.Bind(req)
+		err := json.NewDecoder(c.Request().Body).Decode(&req)
 		if err != nil {
 			return c.String(http.StatusBadRequest, err.Error())
 		}
