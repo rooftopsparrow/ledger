@@ -10,11 +10,11 @@ type PlaidRepo struct {
 }
 
 type PlaidItem struct {
-	tableName struct{}   `pg:"plaid_newest"`
-	ID        int64     `json:"-"`
+	tableName struct{}      `pg:"plaid"`
+	ID        	  int64     `json:"-"`
 	User		  string
-	AccessToken   string `pg:",unique,notnull"`
-	ItemId 		  string
+	AccessToken   string    `pg:",unique,notnull"`
+	ItemId 		  string	`pg:",unique"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
