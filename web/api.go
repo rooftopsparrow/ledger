@@ -94,9 +94,7 @@ func main() {
 		// *** TODO: Hash pw added to CreateUser/db ****
 		pwEncyrpted := encryptPassword(details.Password)
 
-		user, err := repo.Users.CreateUser(details.Name, 
-										  	details.Email,
-											  pwEncyrpted)
+		user, err := repo.Users.CreateUser(details.Name, details.Email, pwEncyrpted)
 		if err != nil {
 			return err
 		}
