@@ -137,13 +137,13 @@ func main() {
 			return c.String(http.StatusBadRequest, err.Error())
 		}
 
-		response, err := client.ExchangePublicToken(req.Token)
+		accessAndItemResponse, err := client.ExchangePublicToken(req.Token)
 		if err != nil {
 			return c.String(http.StatusBadRequest, err.Error())
 		}
 
-		accessToken = response.AccessToken
-		itemID = response.ItemID
+		accessToken = accessAndItemResponse.AccessToken
+		itemID = accessAndItemResponse.ItemID
 
 		c.Logger().Info("public token: ", req.Token)
 		c.Logger().Info("access token: ", accessToken)
@@ -169,16 +169,14 @@ func main() {
 		// GetAccounts retrieves accounts associated with an Item.
 		// See https://plaid.com/docs/api/accounts/.
 
-		responsee, err := client.GetAccounts(accessToken)
+		accountsResponse, err := client.GetAccounts(accessToken)
 		if err != nil {
 			return c.String(http.StatusBadGateway, err.Error())
 		}
 
-		c.Logger().Infof("Got accounts: %v", responsee.Accounts)
+		c.Logger().Infof("Got accounts: %v", accountsResponse.Accounts)
 		return c.String(http.StatusCreated, accessToken)
 	})
-
-
 
 	// Start the server
 	server.Logger.Fatal(server.Start(":8080"))
