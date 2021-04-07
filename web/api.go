@@ -177,6 +177,15 @@ func main() {
 	server.Logger.Fatal(server.Start(":8080"))
 }
 
+func removeItem(c echo.Context, accessToken string){
+	response, err := client.RemoveItem(accessToken)
+	if err != nil {
+		c.String(http.StatusBadGateway, err.Error())
+	}
+	// The Item was removed and the access_token is now invalid
+	fmt.Println(response)
+}
+
 func GenerateJWT(usr *repos.User) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
