@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"encoding/json"
 	jwt "github.com/dgrijalva/jwt-go"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/labstack/echo/v4"
@@ -13,7 +14,6 @@ import (
 	bc "golang.org/x/crypto/bcrypt"
 	"msudenver.edu/ledger/db"
 	"msudenver.edu/ledger/repos"
-	"encoding/json"
 )
 
 type Item struct {
@@ -179,7 +179,7 @@ func main() {
 	server.Logger.Fatal(server.Start(":8080"))
 }
 
-func removeItem(c echo.Context, accessToken string){
+func removeItem(c echo.Context, accessToken string) {
 	response, err := client.RemoveItem(accessToken)
 	if err != nil {
 		c.String(http.StatusBadGateway, err.Error())
