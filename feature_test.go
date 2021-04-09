@@ -42,7 +42,7 @@ func aUserDoesNotHaveAnAccountAndWantsToSignUp() error {
 }
 
 func theUserAsksToSignUp() error {
-	u, err := repo.Users.CreateUser(f.userForm.name, f.userForm.email)
+	u, err := repo.Users.CreateUser(f.userForm.name, f.userForm.email, f.userForm.password)
 	if err != nil {
 		return err
 	}
@@ -129,7 +129,7 @@ func theUserIsCreatedSuccessfully() error {
 
 func userHasSignedUp(name string) error {
 	email := fake.EmailAddress()
-	u, err := repo.Users.CreateUser(name, email)
+	u, err := repo.Users.CreateUser(name, email, password)
 	if err != nil {
 		return err
 	}
