@@ -1,16 +1,37 @@
 package repos
 
-import "time"
+import (
+	"time"
+	"github.com/go-pg/pg/v10"
+)
+
+type PlaidRepo struct {
+	db *pg.DB
+}
 
 type PlaidItem struct {
-	ID            uint64
-	User          *User  `pg:",notnull"`
-	AccessToken   string `pg:",unique,notnull"`
-	ItemID        string `pg:",notnull"`
-	InstitutionID string `pg:",notnull"`
-	Status        string `pg:",notnull"`
+	tableName struct{}      `pg:"plaid"`
+	ID        	  int64     `json:"-"`
+	User		  string
+	AccessToken   string    `pg:",unique,notnull"`
+	ItemId 		  string	`pg:",unique"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
+}
+
+func (r *PlaidRepo) CreatePlaid(token string, itemId string) (*PlaidItem, error) {
+	now := time.Now()
+	plaid := &PlaidItem{
+		AccessToken:  token,
+		ItemId:		itemId,
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+	if _, err := r.db.Model(plaid).Returning("*").Insert(); err != nil {
+		return nil, err
+	}
+
+	return plaid, nil
 }
 
 type LinkEvent struct {
