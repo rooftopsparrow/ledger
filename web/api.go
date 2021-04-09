@@ -107,7 +107,6 @@ func main() {
 	})
 
 	server.POST("/create_link_token", func(c echo.Context) error {
-		// Create a link_token for the given user
 		linkTokenResp, err := client.CreateLinkToken(plaid.LinkTokenConfigs{
 			User: &plaid.LinkTokenUser{
 				ClientUserID: "123-test-user-id",
@@ -139,17 +138,19 @@ func main() {
 			return c.String(http.StatusBadRequest, err.Error())
 		}
 
-		response, err := client.ExchangePublicToken(req.Token)
+		accessAndItemResponse, err := client.ExchangePublicToken(req.Token)
 		if err != nil {
 			return c.String(http.StatusBadRequest, err.Error())
 		}
 
-		accessToken = response.AccessToken
-		itemID = response.ItemID
+		accessToken = accessAndItemResponse.AccessToken
+		itemID = accessAndItemResponse.ItemID
 
 		c.Logger().Info("public token: ", req.Token)
 		c.Logger().Info("access token: ", accessToken)
 		c.Logger().Infof("item ID: %s", itemID)
+
+		repo.Plaids.CreatePlaid(accessToken, itemID)
 
 		// Check if this item already exists
 		// GetItem retrieves an item associated with an access token.
@@ -165,20 +166,26 @@ func main() {
 		//fmt.Println("Item: %s" + item.Products)
 		//fmt.Println("Status: %s" + status["transactions"])
 
-		// Endpoint: /accounts/get
-		// GetAccounts retrieves accounts associated with an Item.
-		// See https://plaid.com/docs/api/accounts/.
-		responsee, err := client.GetAccounts(accessToken)
+		accountsResponse, err := client.GetAccounts(accessToken)
 		if err != nil {
 			return c.String(http.StatusBadGateway, err.Error())
 		}
 
-		c.Logger().Infof("Got accounts: %v", responsee.Accounts)
+		c.Logger().Infof("Got accounts: %v", accountsResponse.Accounts)
 		return c.String(http.StatusCreated, accessToken)
 	})
 
 	// Start the server
 	server.Logger.Fatal(server.Start(":8080"))
+}
+
+func removeItem(c echo.Context, accessToken string){
+	response, err := client.RemoveItem(accessToken)
+	if err != nil {
+		c.String(http.StatusBadGateway, err.Error())
+	}
+	// The Item was removed and the access_token is now invalid
+	fmt.Println(response)
 }
 
 func GenerateJWT(usr *repos.User) (string, error) {

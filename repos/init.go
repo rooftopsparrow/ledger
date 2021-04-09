@@ -20,6 +20,9 @@ type Repo struct {
 	}
 	Accounts interface {
 	}
+	Plaids interface {
+		CreatePlaid(token string, itemId string) (*PlaidItem, error)
+	}
 }
 
 func CreateRepo(db *pg.DB) *Repo {
@@ -27,6 +30,7 @@ func CreateRepo(db *pg.DB) *Repo {
 		db:       db,
 		Users:    &UserRepo{db: db},
 		Accounts: &AccountRepo{db: db},
+		Plaids:	  &PlaidRepo{db: db},
 	}
 	return repo
 }
