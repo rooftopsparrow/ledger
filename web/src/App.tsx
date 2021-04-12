@@ -3,6 +3,7 @@ import { Switch, Route, Redirect, RouteProps } from 'react-router-dom'
 import Landing from './Landing'
 import Login from './Login'
 import Signup from './Signup'
+import Setup from './Setup'
 import Activity from './Activity'
 import { ProvideAuth, useAuth } from './User'
 
@@ -38,6 +39,9 @@ function App () {
           </PrivateRoute> */}
           <Route path="/activity">
             <Activity />
+          </Route>
+          <Route path="/link">
+            <Setup />
           </Route>
         </Switch>
       </main>
