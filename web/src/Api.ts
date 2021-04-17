@@ -5,13 +5,17 @@ export async function createLinkToken(): Promise<string> {
     credentials: "same-origin",
   })
   if (response.ok) {
-    return await response.text()
+    return response.text()
   }
   throw new Error(response.statusText)
 }
 
-export async function createAccessToken(publicToken: string): Promise<void> {
+export async function createAccessToken(publicToken: string): Promise<string> {
   const body = JSON.stringify({ public_token: publicToken })
   const headers = { 'Content-Type': 'application/json' }
-  await fetch('/api/get_access_token', { method: 'POST', headers, body })
+  const response = await fetch('/api/get_access_token', { method: 'POST', headers, body })
+  if (response.ok) {
+    return response.text()
+  }
+  throw new Error(response.statusText)
 }

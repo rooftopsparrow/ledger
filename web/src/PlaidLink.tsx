@@ -1,26 +1,49 @@
 
-import React, { ReactElement, useCallback } from 'react'
+import React, { ReactElement, useCallback, useState } from 'react'
 import { usePlaidLink, PlaidLinkOptions } from 'react-plaid-link'
 
-type PlaidLinkProps = { token: string }
+type PlaidLinkProps = {
+  token: string,
+  o: (publicKey: string, metadata: object) => void
+  onSuccess: (plaidState: object) => void
+  onError: (error: Error) => void
+}
 export default function PlaidLink (opts: PlaidLinkProps): ReactElement {
+  const [publicToken, setPublicToken] = useState<string|null>(null)
   const onSuccess = useCallback(
-    (token, metadata) => console.log('plaid: onSuccess', token, metadata),
+    (publicToken, metadata) => {
+      console.debug('plaid: onSuccess', publicToken, metadata)
+      setPublicToken(publicToken)
+      // opts.onPublicKey(key, metadata)
+    },
     []
   )
   const onEvent = useCallback(
-    (eventName, metadata) => console.log('plaid: onEvent', eventName, metadata),
+    (eventName, metadata) => {
+      console.debug('plaid: onEvent', eventName, metadata),
+      switch (eventName) {
+        case 'HANDOFF':
+          
+      }
+    }
     []
   )
   const onExit = useCallback(
-    (err, metadata) => console.log('plaid: onExit', err, metadata),
+    (err, metadata) => {
+      console.debug('plaid: onExit', err, metadata)
+      if (err) {
+        return opts.onError(err)
+      } else {
+        opts.onSuccess(metadata)
+      }
+    },
     []
   )
   const config: PlaidLinkOptions = {
     token: opts.token,
     onSuccess,
     onEvent,
-    onExit,
+    onExit
   }
   const { open, ready, error } = usePlaidLink(config)
   return (
