@@ -15,11 +15,12 @@ type UserRepo struct {
 }
 
 // CreateUser inserts new user records
-func (r *UserRepo) CreateUser(name string, email string) (*User, error) {
+func (r *UserRepo) CreateUser(name string, email string, password string) (*User, error) {
 	now := time.Now()
 	user := &User{
 		FullName:  name,
 		Email:     email,
+		PW:        password,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
@@ -37,10 +38,11 @@ var emailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z
 
 // User is the struct we use to represent a user of the system
 type User struct {
-	tableName struct{}  `pg:"users"`
-	ID        int64     `json:"-"`
-	FullName  string    `pg:",notnull"`
-	Email     string    `pg:",notnull,unique"`
+	tableName struct{} `pg:"users"`
+	ID        int64    `json:"-"`
+	FullName  string   `pg:",notnull"`
+	Email     string   `pg:",notnull,unique"`
+	PW        string
 	CreatedAt time.Time `pg:"default:now()"`
 	UpdatedAt time.Time
 	DeletedAt time.Time `pg:",soft_delete"`
