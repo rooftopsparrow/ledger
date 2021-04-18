@@ -1,5 +1,6 @@
 import { createElement, createContext, useContext, useState } from 'react'
 import { useLocalStorage } from './Hooks'
+import jwtDecode, { JwtPayload } from "jwt-decode"
 
 const STORAGE = 'ledger'
 
@@ -55,7 +56,8 @@ function useAuthState(): UserContext {
   }
 
   async function logout() {
-    setUser(Object.assign(user, { token: undefined }))
+    console.debug('logout')
+    setUser(null)
   }
 
   async function login(form: LoginForm): Promise<User> {
@@ -64,6 +66,7 @@ function useAuthState(): UserContext {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form)
     })
+    const token = response.headers.get('Authorization')
     let data = await response.json()
     if (!response.ok) {
       throw new Error(data.message)
@@ -83,7 +86,7 @@ function useAuthState(): UserContext {
   }
 }
 
-const invalidContext = () => Promise.reject(new Error('Invalid Context'))
+const invalidContext = () => Promise.reject(new Error('Invalid User Context! You are attempting to use state that is not in the UserProvider'))
 
 export const userContext = createContext<UserContext>({
   user: null,
