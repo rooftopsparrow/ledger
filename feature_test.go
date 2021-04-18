@@ -127,8 +127,9 @@ func theUserIsCreatedSuccessfully() error {
 	return nil
 }
 
-func userHasSignedUp(name string, email string, password string) error {
+func userHasSignedUp(name string) error {
 	email := fake.EmailAddress()
+	password := fake.Password(3, 10, true, true, true)
 	u, err := repo.Users.CreateUser(name, email, password)
 	if err != nil {
 		return err
