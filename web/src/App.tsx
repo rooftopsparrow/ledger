@@ -1,11 +1,12 @@
 import React from 'react'
-import { Switch, Route, Redirect, RouteProps } from 'react-router-dom'
+import { Switch, Route, Link, NavLink, Redirect, RouteProps } from 'react-router-dom'
 import Landing from './Landing'
 import Login from './Login'
 import Signup from './Signup'
 import Setup from './Setup'
 import Activity from './Activity'
 import { ProvideAuth, useAuth } from './User'
+import Nav from './Nav'
 
 function PrivateRoute({children, ...rest}: RouteProps) {
   const { user } = useAuth()
@@ -34,15 +35,22 @@ function App () {
           <Route exact path="/login">
             <Login />
           </Route>
-          {/* <PrivateRoute path="/account">
-            <Account />
-          </PrivateRoute> */}
-          <Route path="/activity">
-            <Activity />
-          </Route>
           <Route path="/link">
             <Setup />
           </Route>
+          <PrivateRoute>
+            <div className="flex flex-col justify-center">
+              <div className="container mx-auto px-3 h-screen bg-white">
+                <Nav />
+                <PrivateRoute path="/activity">
+                  <Activity />
+                </PrivateRoute>
+                <PrivateRoute path="/envelopes">
+                  <h1>Hello Envelopes</h1>
+                </PrivateRoute>
+              </div>
+            </div>
+          </PrivateRoute>
         </Switch>
       </main>
     </ProvideAuth>

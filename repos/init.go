@@ -17,6 +17,7 @@ type Repo struct {
 	db    *pg.DB
 	Users interface {
 		CreateUser(name string, email string, password string) (*User, error)
+		GetUser(email string) (*User, error)
 	}
 	Accounts interface {
 	}
@@ -30,7 +31,7 @@ func CreateRepo(db *pg.DB) *Repo {
 		db:       db,
 		Users:    &UserRepo{db: db},
 		Accounts: &AccountRepo{db: db},
-		Plaids:	  &PlaidRepo{db: db},
+		Plaids:   &PlaidRepo{db: db},
 	}
 	return repo
 }

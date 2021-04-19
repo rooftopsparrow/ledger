@@ -1,5 +1,6 @@
 import { createElement, createContext, useContext, useState } from 'react'
 import { useLocalStorage } from './Hooks'
+import jwtDecode, { JwtPayload } from "jwt-decode"
 
 const STORAGE = 'ledger'
 
@@ -17,9 +18,10 @@ export interface SignupForm {
 
 export interface User {
   fullName: string
-  email: string
   token?: string
 }
+
+type TokenPayload = JwtPayload & { name: string }
 
 // https://usehooks.com/useAuth/
 
@@ -48,30 +50,38 @@ function useAuthState(): UserContext {
       // setError(token)
       throw new Error(token)
     }
+    const data: TokenPayload = jwtDecode(token)
     // TODO Verify data is actually of type User
-    let user: User = { token, fullName: u.name, email: u.email }
+    let user: User = { token, fullName: data.name }
     setUser(user)
     return user
   }
 
   async function logout() {
-    setUser(Object.assign(user, { token: undefined }))
+    console.debug('logout')
+    setUser(null)
   }
 
-  async function login(form: LoginForm): Promise<User> {
+  async function login(f: LoginForm): Promise<User> {
+    const form = new FormData()
+    for (let [key, value] of Object.entries(f)) {
+      form.append(key, value)
+    }
     const response = await fetch('/api/login', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form)
+      body: form
     })
-    let data = await response.json()
     if (!response.ok) {
-      throw new Error(data.message)
+      const detail = await response.json()
+      const message = detail?.message || response.statusText
+      throw new Error(message)
     }
-    // TODO: Verify data is actually of type User
-    console.debug('api response', data)
-    setUser(data)
-    return data as User
+    const token = await response.text()
+    const data: TokenPayload = jwtDecode(token)
+    console.debug('login response', data)
+    const user: User = { token, fullName: data.name }
+    setUser(user)
+    return user
   }
 
   return {
@@ -83,7 +93,7 @@ function useAuthState(): UserContext {
   }
 }
 
-const invalidContext = () => Promise.reject(new Error('Invalid Context'))
+const invalidContext = () => Promise.reject(new Error('Invalid User Context! You are attempting to use state that is not in the UserProvider'))
 
 export const userContext = createContext<UserContext>({
   user: null,

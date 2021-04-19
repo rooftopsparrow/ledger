@@ -7,7 +7,7 @@ function Login () {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoggingIn, setIsLoggingIn] = useState(false)
-  const [error, setError] = useState<Error|null>(null)
+  const [loginError, setError] = useState<Error|null>(null)
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setIsLoggingIn(true)
@@ -70,6 +70,14 @@ function Login () {
                 </Link>
               </p>
             </div>
+            {
+              loginError
+              ? 
+                <label form="signup">
+                  <em>{loginError.message}</em>
+                </label>
+              : null
+            }
           </form>
         </div>
       </div>

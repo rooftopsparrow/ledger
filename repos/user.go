@@ -33,6 +33,15 @@ func (r *UserRepo) CreateUser(name string, email string, password string) (*User
 	return user, nil
 }
 
+func (r *UserRepo) GetUser(email string) (*User, error) {
+	user := new(User)
+	err := r.db.Model(user).Where("email = ?", email).Limit(1).Select()
+	if err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
 // Thanks to Edd Turtle https://golangcode.com/validate-an-email-address/
 var emailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 
