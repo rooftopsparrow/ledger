@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"encoding/json"
+
 	jwt "github.com/dgrijalva/jwt-go"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/labstack/echo/v4"
@@ -50,9 +51,6 @@ var repo *repos.Repo
 // Temp env var expires on session close
 var jwtEnv = os.Getenv("jwt")
 var signKey = []byte("")
-
-// User pw byte slice
-var bcryptPW = []byte("")
 
 var clientOptions = plaid.ClientOptions{
 	os.Getenv("PLAID_CLIENT_ID"),
@@ -104,6 +102,31 @@ func main() {
 			server.Logger.Errorf("Error creating JWT: %v", err)
 		}
 		return c.String(http.StatusCreated, tokenString)
+	})
+
+	server.POST("/login", func(c echo.Context) error {
+
+		email := c.FormValue("email")
+		password := c.FormValue("password")
+
+		// FIXME: don't log passwords
+		server.Logger.Infof("got form %s, %s", email, password)
+
+		user, err := repo.Users.GetUser(email)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid email or password", err)
+		}
+
+		if !confirmPassword(user.PW, password) {
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid email or password", fmt.Errorf("password did not match for %s", email))
+		}
+
+		tokenString, err := GenerateJWT(user)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "unknown error", err)
+		}
+
+		return c.String(http.StatusOK, tokenString)
 	})
 
 	server.POST("/create_link_token", func(c echo.Context) error {
@@ -213,25 +236,19 @@ func GenerateJWT(usr *repos.User) (string, error) {
 */
 func encryptPassword(password string) string {
 	// Byte slice of User password to use bcrypt.
-	bcryptPW = []byte(password)
+	pw := []byte(password)
 	// Hashing the password with the default cost of 10
-	hashedPassword, err := bc.GenerateFromPassword(bcryptPW, bc.DefaultCost)
+	hashedPassword, err := bc.GenerateFromPassword(pw, bc.DefaultCost)
 	if err != nil {
 		panic(err)
 	}
-
-	// Out hashed pw
-	fmt.Println("HASH'D PW: " + string(hashedPassword) + "\n")
-
-	// Test hash validation, nil == match
-	confirmPassword(hashedPassword)
-
 	return string(hashedPassword)
 }
 
 // Compare password to db pw hash record (login pw validation).
-func confirmPassword(hash []byte) {
-	err := bc.CompareHashAndPassword(hash, bcryptPW)
-	fmt.Print("Confirm PW (nil if match): ")
-	fmt.Println(err)
+func confirmPassword(hash string, password string) bool {
+	h := []byte(hash)
+	p := []byte(password)
+	err := bc.CompareHashAndPassword(h, p)
+	return err == nil
 }
