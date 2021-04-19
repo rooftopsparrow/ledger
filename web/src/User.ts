@@ -60,21 +60,27 @@ function useAuthState(): UserContext {
     setUser(null)
   }
 
-  async function login(form: LoginForm): Promise<User> {
+  async function login(f: LoginForm): Promise<User> {
+    const form = new FormData()
+    for (let [key, value] of Object.entries(f)) {
+      form.append(key, value)
+    }
     const response = await fetch('/api/login', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form)
+      body: form
     })
-    const token = response.headers.get('Authorization')
-    let data = await response.json()
     if (!response.ok) {
-      throw new Error(data.message)
+      const detail = await response.json()
+      const message = detail?.message || response.statusText
+      throw new Error(message)
     }
+    const token = await response.text()
+    const data = jwtDecode(token)
     // TODO: Verify data is actually of type User
-    console.debug('api response', data)
-    setUser(data)
-    return data as User
+    console.debug('login response', data)
+    const user: User = { token, fullName: '', email: '' }
+    setUser(user)
+    return user
   }
 
   return {
