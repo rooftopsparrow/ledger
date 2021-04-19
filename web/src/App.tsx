@@ -35,25 +35,22 @@ function App () {
           <Route exact path="/login">
             <Login />
           </Route>
-          {/* <PrivateRoute path="/account">
-            <Account />
-          </PrivateRoute> */}
-          <div className="flex flex-col justify-center">
-            <div className="container mx-auto px-3 h-screen bg-white">
-              <Nav />
-              <Route path="/activity">
-                <Activity />
-              </Route>
-              <Route path="/envelopes">
-                <h1>Hello Envelopes</h1>
-              </Route>
-            </div>
-          </div>
           <Route path="/link">
             <Setup />
           </Route>
-          <Route>
-          </Route>
+          <PrivateRoute>
+            <div className="flex flex-col justify-center">
+              <div className="container mx-auto px-3 h-screen bg-white">
+                <Nav />
+                <PrivateRoute path="/activity">
+                  <Activity />
+                </PrivateRoute>
+                <PrivateRoute path="/envelopes">
+                  <h1>Hello Envelopes</h1>
+                </PrivateRoute>
+              </div>
+            </div>
+          </PrivateRoute>
         </Switch>
       </main>
     </ProvideAuth>
