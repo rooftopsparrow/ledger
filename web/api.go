@@ -48,9 +48,7 @@ type Access struct {
 
 var repo *repos.Repo
 
-// Temp env var expires on session close
-var jwtEnv = os.Getenv("jwt")
-var signKey = []byte("")
+var JWT_KEY = []byte(os.Getenv("JWT_SECRET"))
 
 var clientOptions = plaid.ClientOptions{
 	os.Getenv("PLAID_CLIENT_ID"),
@@ -215,15 +213,12 @@ func GenerateJWT(usr *repos.User) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
-	claims["id"] = usr.ID
-	claims["user"] = usr.FullName
+	claims["sub"] = usr.ID
+	claims["name"] = usr.FullName
 	claims["iat"] = time.Now().Unix()
 	claims["exp"] = time.Now().Add(time.Minute * 60).Unix()
 
-	// Nav to: https://jwt.io/  paste tokenString in text field.
-	var signKey = []byte(jwtEnv)
-
-	tokenString, err := token.SignedString(signKey)
+	tokenString, err := token.SignedString(JWT_KEY)
 	if err != nil {
 		return "", err
 	}

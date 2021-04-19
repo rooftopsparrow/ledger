@@ -18,9 +18,10 @@ export interface SignupForm {
 
 export interface User {
   fullName: string
-  email: string
   token?: string
 }
+
+type TokenPayload = JwtPayload & { name: string }
 
 // https://usehooks.com/useAuth/
 
@@ -49,8 +50,9 @@ function useAuthState(): UserContext {
       // setError(token)
       throw new Error(token)
     }
+    const data: TokenPayload = jwtDecode(token)
     // TODO Verify data is actually of type User
-    let user: User = { token, fullName: u.name, email: u.email }
+    let user: User = { token, fullName: data.name }
     setUser(user)
     return user
   }
@@ -75,10 +77,9 @@ function useAuthState(): UserContext {
       throw new Error(message)
     }
     const token = await response.text()
-    const data = jwtDecode(token)
-    // TODO: Verify data is actually of type User
+    const data: TokenPayload = jwtDecode(token)
     console.debug('login response', data)
-    const user: User = { token, fullName: '', email: '' }
+    const user: User = { token, fullName: data.name }
     setUser(user)
     return user
   }

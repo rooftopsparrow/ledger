@@ -37,7 +37,7 @@ func (r *UserRepo) GetUser(email string) (*User, error) {
 	user := new(User)
 	err := r.db.Model(user).Where("email = ?", email).Limit(1).Select()
 	if err != nil {
-		return nil, err
+		return user, err
 	}
 	return user, nil
 }
