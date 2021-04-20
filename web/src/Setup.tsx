@@ -72,7 +72,7 @@ export default function Setup (): ReactElement {
     }
   }, [publicToken])
 
-  const config = {
+  const config: PlaidLinkOptions = {
     token: linkToken,
     onLoad,
     onEvent,
@@ -90,18 +90,18 @@ export default function Setup (): ReactElement {
           <header>
             <h3 className="text-purple-800 font-serif font-extrabold text-5xl">Welcome to Ledger</h3>
           </header>
-          <div>
-            <p className="text-2xl font-thin text-black pt-5">
-              <span>①</span> Link Ledger to your bank account using Plaid.
+          <div className="text-2xl font-thin text-gray-300">
+            <p className={`pt-5 ${step >= 1 ? 'text-black' : ''}`}>
+              <span>①</span> Link Ledger to your bank account using Plaid
             </p>
-            <p className="text-2xl font-thin text-gray-400 pt-1">
-              <span>②</span> Sync account balances and transactions.
+            <p className={`${ step >= 2 ? 'text-black' : ''}`}>
+              <span>②</span> Sync account balances and transactions
             </p>
-            <p className="text-2xl font-thin text-gray-400 pt-1">
-              <span>③</span> Enjoy a simpler budgeting experience.
+            <p className={`${ step >= 2 ? 'text-black' : ''}`}>
+              <span>③</span> Enjoy a simpler budgeting experience
             </p>
           </div>
-          <div className="text-base leading-6 text-gray-700">
+          <div className="text-base pt-5 text-gray-700">
           { !complete
             ?
               <button
