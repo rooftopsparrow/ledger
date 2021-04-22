@@ -220,6 +220,17 @@ func getCategories(c echo.Context){
 	fmt.Println(categories)
 }
 
+func getTransactions(c echo.Context, accessToken string){
+	const iso8601TimeFormat = "2006-01-02"
+	
+	startDate := time.Now().Add(-365 * 24 * time.Hour).Format(iso8601TimeFormat)
+	endDate := time.Now().Format(iso8601TimeFormat)
+
+	transactionsResp, err := client.GetTransactions(accessToken, startDate, endDate)
+
+	fmt.Println(transactionsResp)
+}
+
 func getAccountBalances(c echo.Context, accessToken string){
 	balanceResp, err := client.GetBalances(accessToken)
 
