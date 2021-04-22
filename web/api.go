@@ -179,6 +179,7 @@ func main() {
 		}
 
 		c.Logger().Infof("Got accounts: %v", accountsResponse.Accounts)
+
 		return c.String(http.StatusCreated, accessToken)
 	})
 
@@ -221,6 +222,16 @@ func getTransactions(c echo.Context, accessToken string){
 	fmt.Println(transactionsResp)
 }
 
+func refreshTransactions(c echo.Context, accessToken string){
+	refreshedTransactions, err := client.RefreshTransactions(accessToken)
+
+	if err != nil {
+		c.String(http.StatusBadGateway, err.Error())
+	}
+
+	fmt.Println(refreshedTransactions)
+}
+
 func getAccountBalances(c echo.Context, accessToken string){
 	balanceResp, err := client.GetBalances(accessToken)
 
@@ -242,7 +253,7 @@ func getPlaidItem(c echo.Context, accessToken string){
 		if err != nil {
 			c.String(http.StatusBadGateway, err.Error())
 		}
-		
+
 		fmt.Println(status)
 		fmt.Println(item)
 }
