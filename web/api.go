@@ -173,21 +173,13 @@ func main() {
 
 		repo.Plaids.CreatePlaid(accessToken, itemID)
 
-		// Check if this item already exists
-		// GetItem retrieves an item associated with an access token.
-		// See https://plaid.com/docs/api/items/#itemget.
-		// itemResp, errrrr := client.GetItem(accessToken)
-		// item := itemResp.Item
-		// status := itemResp.Status
-		// if errrrr != nil {
-		// 	http.Error(w, errrrr.Error(), 400)
-		// 	return
-		// }
+		accountsResponse, err := client.GetAccounts(accessToken)
+		if err != nil {
+			return c.String(http.StatusBadGateway, err.Error())
+		}
 
-		//fmt.Println("Item: %s" + item.Products)
-		//fmt.Println("Status: %s" + status["transactions"])
-
-
+		c.Logger().Infof("Got accounts: %v", accountsResponse.Accounts)
+		return c.String(http.StatusCreated, accessToken)
 	})
 
 	// Start the server
@@ -229,17 +221,6 @@ func getTransactions(c echo.Context, accessToken string){
 	fmt.Println(transactionsResp)
 }
 
-func getAccounts(c echo.Context, accessToken string){
-	accountsResponse, err := client.GetAccounts(accessToken)
-	
-	if err != nil {
-		return c.String(http.StatusBadGateway, err.Error())
-	}
-
-	c.Logger().Infof("Got accounts: %v", accountsResponse.Accounts)
-	return c.String(http.StatusCreated, accessToken)
-}
-
 func getAccountBalances(c echo.Context, accessToken string){
 	balanceResp, err := client.GetBalances(accessToken)
 
@@ -248,6 +229,22 @@ func getAccountBalances(c echo.Context, accessToken string){
 	}
 
 	fmt.Println(balanceResp)
+}
+
+func getPlaidItem(c echo.Context, accessToken string){
+		// Check if this item already exists
+		// GetItem retrieves an item associated with an access token.
+		// See https://plaid.com/docs/api/items/#itemget.
+		itemResp, err := client.GetItem(accessToken)
+		item := itemResp.Item
+		status := itemResp.Status
+
+		if err != nil {
+			c.String(http.StatusBadGateway, err.Error())
+		}
+		
+		fmt.Println(status)
+		fmt.Println(item)
 }
 
 func GenerateJWT(usr *repos.User) (string, error) {
