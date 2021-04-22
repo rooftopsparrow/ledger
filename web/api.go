@@ -220,6 +220,16 @@ func getCategories(c echo.Context){
 	fmt.Println(categories)
 }
 
+func getAccountBalances(c echo.Context, accessToken string){
+	balanceResp, err := client.GetBalances(accessToken)
+
+	if err != nil {
+		c.String(http.StatusBadGateway, err.Error())
+	}
+
+	fmt.Println(balanceResp)
+}
+
 func GenerateJWT(usr *repos.User) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
