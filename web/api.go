@@ -187,13 +187,7 @@ func main() {
 		//fmt.Println("Item: %s" + item.Products)
 		//fmt.Println("Status: %s" + status["transactions"])
 
-		accountsResponse, err := client.GetAccounts(accessToken)
-		if err != nil {
-			return c.String(http.StatusBadGateway, err.Error())
-		}
 
-		c.Logger().Infof("Got accounts: %v", accountsResponse.Accounts)
-		return c.String(http.StatusCreated, accessToken)
 	})
 
 	// Start the server
@@ -222,13 +216,28 @@ func getCategories(c echo.Context){
 
 func getTransactions(c echo.Context, accessToken string){
 	const iso8601TimeFormat = "2006-01-02"
-	
+
 	startDate := time.Now().Add(-365 * 24 * time.Hour).Format(iso8601TimeFormat)
 	endDate := time.Now().Format(iso8601TimeFormat)
 
 	transactionsResp, err := client.GetTransactions(accessToken, startDate, endDate)
 
+	if err != nil {
+		c.String(http.StatusBadGateway, err.Error())
+	}
+
 	fmt.Println(transactionsResp)
+}
+
+func getAccounts(c echo.Context, accessToken string){
+	accountsResponse, err := client.GetAccounts(accessToken)
+	
+	if err != nil {
+		return c.String(http.StatusBadGateway, err.Error())
+	}
+
+	c.Logger().Infof("Got accounts: %v", accountsResponse.Accounts)
+	return c.String(http.StatusCreated, accessToken)
 }
 
 func getAccountBalances(c echo.Context, accessToken string){
