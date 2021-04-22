@@ -209,6 +209,17 @@ func removeItem(c echo.Context, accessToken string) {
 	fmt.Println(response)
 }
 
+func getCategories(c echo.Context){
+	response, err := client.GetCategories()
+	categories := response.Categories
+
+	if err != nil {
+		c.String(http.StatusBadGateway, err.Error())
+	}
+
+	fmt.Println(categories)
+}
+
 func GenerateJWT(usr *repos.User) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
