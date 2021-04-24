@@ -183,66 +183,51 @@ func main() {
 		return c.String(http.StatusCreated, accessToken)
 	})
 
-	// Start the server
-	server.Logger.Fatal(server.Start(":8080"))
-}
+	server.POST("/get_transactions", func(c echo.Context) error {
 
-func removeItem(c echo.Context, accessToken string) {
-	response, err := client.RemoveItem(accessToken)
-	if err != nil {
-		c.String(http.StatusBadGateway, err.Error())
-	}
-	// The Item was removed and the access_token is now invalid
-	fmt.Println(response)
-}
+		const iso8601TimeFormat = "2006-01-02"
+	
+		startDate := time.Now().Add(-365 * 24 * time.Hour).Format(iso8601TimeFormat)
+		endDate := time.Now().Format(iso8601TimeFormat)
+	
+		transactionsResp, err := client.GetTransactions(accessToken, startDate, endDate)
+	
+		if err != nil {
+			c.String(http.StatusBadGateway, err.Error())
+		}
+	
+		//fmt.Println(transactionsResp)
 
-func getCategories(c echo.Context){
-	response, err := client.GetCategories()
-	categories := response.Categories
+		return c.JSON(http.StatusCreated, transactionsResp)
+	})
 
-	if err != nil {
-		c.String(http.StatusBadGateway, err.Error())
-	}
+	server.POST("/get_categories", func(c echo.Context) error {
 
-	fmt.Println(categories)
-}
+		response, err := client.GetCategories()
+		categories := response.Categories
+	
+		if err != nil {
+			c.String(http.StatusBadGateway, err.Error())
+		}
+	
+		return c.JSON(http.StatusCreated, categories)
+	})
 
-func getTransactions(c echo.Context, accessToken string){
-	const iso8601TimeFormat = "2006-01-02"
+	server.POST("/get_account_balances", func(c echo.Context) error {
 
-	startDate := time.Now().Add(-365 * 24 * time.Hour).Format(iso8601TimeFormat)
-	endDate := time.Now().Format(iso8601TimeFormat)
+		balanceResp, err := client.GetBalances(accessToken)
+	
+		if err != nil {
+			c.String(http.StatusBadGateway, err.Error())
+		}
+	
+		fmt.Println(balanceResp)
 
-	transactionsResp, err := client.GetTransactions(accessToken, startDate, endDate)
+		return c.JSON(http.StatusCreated, balanceResp)
+	})
 
-	if err != nil {
-		c.String(http.StatusBadGateway, err.Error())
-	}
+	server.POST("/get_plaid_item", func(c echo.Context) error {
 
-	fmt.Println(transactionsResp)
-}
-
-func refreshTransactions(c echo.Context, accessToken string){
-	refreshedTransactions, err := client.RefreshTransactions(accessToken)
-
-	if err != nil {
-		c.String(http.StatusBadGateway, err.Error())
-	}
-
-	fmt.Println(refreshedTransactions)
-}
-
-func getAccountBalances(c echo.Context, accessToken string){
-	balanceResp, err := client.GetBalances(accessToken)
-
-	if err != nil {
-		c.String(http.StatusBadGateway, err.Error())
-	}
-
-	fmt.Println(balanceResp)
-}
-
-func getPlaidItem(c echo.Context, accessToken string){
 		// Check if this item already exists
 		// GetItem retrieves an item associated with an access token.
 		// See https://plaid.com/docs/api/items/#itemget.
@@ -256,6 +241,37 @@ func getPlaidItem(c echo.Context, accessToken string){
 
 		fmt.Println(status)
 		fmt.Println(item)
+
+		return c.JSON(http.StatusCreated, item)
+	})
+
+	server.POST("/refresh_transactions", func(c echo.Context) error {
+
+		refreshedTransactions, err := client.RefreshTransactions(accessToken)
+	
+		if err != nil {
+			c.String(http.StatusBadGateway, err.Error())
+		}
+	
+		fmt.Println(refreshedTransactions)
+
+		return c.JSON(http.StatusCreated, refreshedTransactions)
+	})
+
+	server.POST("/remove_item", func(c echo.Context) error {
+
+		response, err := client.RemoveItem(accessToken)
+		if err != nil {
+			c.String(http.StatusBadGateway, err.Error())
+		}
+		// The Item was removed and the access_token is now invalid
+		fmt.Println(response)
+
+		return c.JSON(http.StatusCreated, response)
+	})
+
+	// Start the server
+	server.Logger.Fatal(server.Start(":8080"))
 }
 
 func GenerateJWT(usr *repos.User) (string, error) {
