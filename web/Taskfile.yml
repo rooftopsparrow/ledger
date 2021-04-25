@@ -12,6 +12,7 @@ tasks:
   dev:
     desc: Run the ui development server
     cmds:
+      - npm install
       - npm start
 
   build:
