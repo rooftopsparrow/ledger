@@ -1,7 +1,8 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react'
 import { createLinkToken, createAccessToken } from './Api'
-import { usePlaidLink, PlaidLinkOptions } from 'react-plaid-link'
+import { usePlaidLink } from 'react-plaid-link'
 import { Redirect } from 'react-router'
+import { Account } from './PlaidApi'
 
 function Loading () {
   return (
@@ -14,44 +15,126 @@ function Loading () {
   )
 }
 
-export default function Setup (): ReactElement { 
+interface LinkDetails {
+  public_token: string,
+  accounts: Array<Account>
+  institution: 
+}
 
-  const [linkToken, setLinkToken] = useState<string>('')
-  const [publicToken, setPublicToken] = useState<string>()
-  const [complete, setComplete] = useState(false)
-  const [step, setStep] = useState(1)
-  const totalSteps = 3
+type StepProps = {
+  onComplete: (error?: ErrorEvent|Error) => void
+}
 
-  const onLoad = useCallback(
-    (...args) => console.debug('plaid: onLoad', args),
-    []
-  )
+type LinkAccountProps = {
+  onLink: (details: LinkDetails) => void,
+  linkToken: string,
+} & StepProps
 
+function LinkAccount (props: LinkAccountProps) {
+  const [handoff, setHandoff] = useState(false)
   const onSuccess = useCallback(
-    (publicToken, metadata) => {
-      console.debug('plaid: onSuccess', publicToken, metadata)
-      setPublicToken(publicToken)
+    (_, metadata: LinkDetails) => {
+      console.debug('plaid: onSuccess', metadata)
+      props.onLink(metadata)
     },
     []
   )
-
   const onEvent = useCallback(
     (eventName, metadata) => {
       console.debug('plaid: onEvent', eventName, metadata)
       switch (eventName) {
         case 'HANDOFF':
-          setComplete(true)
+          setHandoff(true)
       }
     },
     []
   )
-
-  const onExit = useCallback(
-    (err, metadata) => {
-      console.debug('plaid: onExit', err, metadata)
-    },
-    []
+  const { open, ready, error } = usePlaidLink({
+    token: props.linkToken,
+    onEvent,
+    onSuccess
+  })
+  useEffect(() => {
+    if (publicToken) {
+      createAccessToken(publicToken).then((...args) => {
+        console.debug('created access token', ...args)
+        setAccessToken(true)
+      }).catch(error => {
+        console.error('error creating access token')
+      })
+    }
+  }, [publicToken])
+  useEffect(() => {
+    if (error || handoff) {
+      error ? props.onComplete(error) : props.onComplete()
+    }
+  }, [handoff])
+  return (
+    <button
+      disabled={!ready}
+      onClick={() => open()}
+      className="px-36 py-3 mt-4 bg-purple-800 hover:bg-purple-600 text-yellow-200 shadow-lg rounded-md">
+      { ready ? "Link Account" : <Loading />}
+    </button>
   )
+}
+
+type LoadAccountsProps = StepProps & {
+  publicToken: string
+}
+
+function LoadAccounts (props: LoadAccountsProps): ReactElement {
+  const [loading, setLoading] = useState(false)
+  const [authed, setAuthed] = useState(false)
+  useEffect(() => {
+    setLoading(loading)
+    createAccessToken(props.publicToken).then((...args) => {
+      console.debug('created access token', ...args)
+      setAuthed(true)
+    }).catch(error => {
+      console.error('error creating access token', error)
+      props.onComplete(error)
+      setLoading(false)
+    })
+  }, [])
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 500)
+    return () => clearTimeout(timer)
+  }, [authed])
+  return (
+    <div>
+      {
+        loading
+        ? <Loading />
+        : <button onClick={() => props.onComplete()}>Continue</button>
+      }
+    </div>
+  )
+}
+
+function Done (props: StepProps) {
+  return (
+    <button onClick={() => props.onComplete()}>
+    </button>
+  )
+}
+
+export default function Setup (): ReactElement {
+  // const [accounts, setAccounts] = useState<>()
+  const [linkToken, setLinkToken] = useState<string>('')
+  const [linkDetails, setLinkDetails] = useState<LinkDetails>()
+  const TOTAL_STEPS = 3
+  const [step, setStep] = useState(2)
+  const [error, setError] = useState<Error>()
+  const [complete, setComplete] = useState(false)
+  
+  const nextStep = useCallback((error) => {
+    if (error) return setError(error)
+    if (step >= TOTAL_STEPS) {
+      return setComplete(true)
+    }
+    return setStep(step => step + 1)
+  }, [step])
 
   useEffect(() => {
     createLinkToken().then((token) => {
@@ -62,27 +145,7 @@ export default function Setup (): ReactElement {
     })
   }, [])
 
-  useEffect(() => {
-    if (publicToken) {
-      createAccessToken(publicToken).then((...args) => {
-        console.debug('created access token', ...args)
-      }).catch(error => {
-        console.error('error creating access token')
-      })
-    }
-  }, [publicToken])
-
-  const config: PlaidLinkOptions = {
-    token: linkToken,
-    onLoad,
-    onEvent,
-    onSuccess,
-    onExit
-  }
-  const { open, ready, error } = usePlaidLink(config)
-
   if (complete) return (<Redirect to="/activity" />)
-
   return (
     <section className="min-h-screen py-6 flex flex-col justify-center">
       <div className="px-16">
@@ -97,31 +160,30 @@ export default function Setup (): ReactElement {
             <p className={`${ step >= 2 ? 'text-black' : ''}`}>
               <span>②</span> Sync account balances and transactions
             </p>
-            <p className={`${ step >= 2 ? 'text-black' : ''}`}>
+            <p className={`${ step >= 3 ? 'text-black' : ''}`}>
               <span>③</span> Enjoy a simpler budgeting experience
             </p>
+            <button
+              onClick={() => setComplete(true) }
+              className="underline font-extralight text-yellow-300 text-xs"
+            >
+              Skip Setup
+            </button>
           </div>
           <div className="text-base pt-5 text-gray-700">
-          { !complete
-            ?
-              <button
-                disabled={!ready}
-                onClick={() => open()}
-                className="px-36 py-3 mt-4 bg-purple-800 hover:bg-purple-600 text-yellow-200 shadow-lg rounded-md">
-                { ready ? "Link Account" : <Loading /> }
-              </button>
-            : null
+          { linkToken && step === 1 && <LinkAccount
+            linkToken={linkToken}
+            onLink={setLinkDetails}
+            onComplete={nextStep}
+            />
           }
-          {
-            complete ? 
-            <span>
-              Link Completed
-            </span>
-            : 
-            null
+          { linkDetails && step === 2 && <LoadAccounts
+              publicToken={linkDetails.public_token}
+              onComplete={nextStep}
+              />
           }
-          {
-            (error != null)
+          { step === 3 && <Done onComplete={nextStep} /> }
+          { (error != null)
             ? <p>
                 { error.message }
               </p>
