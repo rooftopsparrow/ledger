@@ -1,4 +1,3 @@
-
 export async function createLinkToken(): Promise<string> {
   const response = await fetch('/api/create_link_token', {
     method: 'POST',
