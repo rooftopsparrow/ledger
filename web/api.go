@@ -173,40 +173,105 @@ func main() {
 
 		repo.Plaids.CreatePlaid(accessToken, itemID)
 
-		// Check if this item already exists
-		// GetItem retrieves an item associated with an access token.
-		// See https://plaid.com/docs/api/items/#itemget.
-		// itemResp, errrrr := client.GetItem(accessToken)
-		// item := itemResp.Item
-		// status := itemResp.Status
-		// if errrrr != nil {
-		// 	http.Error(w, errrrr.Error(), 400)
-		// 	return
-		// }
-
-		//fmt.Println("Item: %s" + item.Products)
-		//fmt.Println("Status: %s" + status["transactions"])
-
 		accountsResponse, err := client.GetAccounts(accessToken)
 		if err != nil {
 			return c.String(http.StatusBadGateway, err.Error())
 		}
 
 		c.Logger().Infof("Got accounts: %v", accountsResponse.Accounts)
+
 		return c.String(http.StatusCreated, accessToken)
+	})
+
+	server.POST("/get_transactions", func(c echo.Context) error {
+
+		const iso8601TimeFormat = "2006-01-02"
+	
+		startDate := time.Now().Add(-365 * 24 * time.Hour).Format(iso8601TimeFormat)
+		endDate := time.Now().Format(iso8601TimeFormat)
+	
+		transactionsResp, err := client.GetTransactions(accessToken, startDate, endDate)
+	
+		if err != nil {
+			c.String(http.StatusBadGateway, err.Error())
+		}
+	
+		//fmt.Println(transactionsResp)
+
+		return c.JSON(http.StatusCreated, transactionsResp)
+	})
+
+	server.POST("/get_categories", func(c echo.Context) error {
+
+		response, err := client.GetCategories()
+		categories := response.Categories
+	
+		if err != nil {
+			c.String(http.StatusBadGateway, err.Error())
+		}
+	
+		return c.JSON(http.StatusCreated, categories)
+	})
+
+	server.POST("/get_account_balances", func(c echo.Context) error {
+
+		balanceResp, err := client.GetBalances(accessToken)
+	
+		if err != nil {
+			c.String(http.StatusBadGateway, err.Error())
+		}
+	
+		fmt.Println(balanceResp)
+
+		return c.JSON(http.StatusCreated, balanceResp)
+	})
+
+	server.POST("/get_plaid_item", func(c echo.Context) error {
+
+		// Check if this item already exists
+		// GetItem retrieves an item associated with an access token.
+		// See https://plaid.com/docs/api/items/#itemget.
+		itemResp, err := client.GetItem(accessToken)
+		item := itemResp.Item
+		status := itemResp.Status
+
+		if err != nil {
+			c.String(http.StatusBadGateway, err.Error())
+		}
+
+		fmt.Println(status)
+		fmt.Println(item)
+
+		return c.JSON(http.StatusCreated, item)
+	})
+
+	server.POST("/refresh_transactions", func(c echo.Context) error {
+
+		refreshedTransactions, err := client.RefreshTransactions(accessToken)
+	
+		if err != nil {
+			c.String(http.StatusBadGateway, err.Error())
+		}
+	
+		fmt.Println(refreshedTransactions)
+
+		return c.JSON(http.StatusCreated, refreshedTransactions)
+	})
+
+	server.POST("/remove_item", func(c echo.Context) error {
+
+		response, err := client.RemoveItem(accessToken)
+		if err != nil {
+			c.String(http.StatusBadGateway, err.Error())
+		}
+		// The Item was removed and the access_token is now invalid
+		fmt.Println(response)
+
+		return c.JSON(http.StatusCreated, response)
 	})
 
 	// Start the server
 	server.Logger.Fatal(server.Start(":8080"))
-}
-
-func removeItem(c echo.Context, accessToken string) {
-	response, err := client.RemoveItem(accessToken)
-	if err != nil {
-		c.String(http.StatusBadGateway, err.Error())
-	}
-	// The Item was removed and the access_token is now invalid
-	fmt.Println(response)
 }
 
 func GenerateJWT(usr *repos.User) (string, error) {

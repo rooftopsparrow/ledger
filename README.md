@@ -32,7 +32,7 @@ $ brew bundle
   ```shell
   $ task web:start
   ```
-4. Ensure environment file is correct `web/.env`
+4. Ensure environment file is correct `web/.env` ( copy from `env.template` ).
 5. Navigate to the localhost:{port} printed in the console
 ## Testing
 
