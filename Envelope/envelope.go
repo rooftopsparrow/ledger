@@ -1,36 +1,28 @@
-/*
-	Initial outline of Envelope repo w/ funcs to complete MVP (from Ledger Proposal)
-	Input needed:
-		1. Ideas of any missing, additional, or removeable funcs for MVP?
-		2. Ideas for how we can apply to achieve MVP? (front end interaction, database, mocked, etc.)
-*/
-
-package main
+package repos
 
 import (
 	"fmt"
+	"github.com/go-pg/pg/v10"
 	"math/rand"
 	"time"
-	// "net/http"
-	// "encoding/json"
-	// jwt "github.com/dgrijalva/jwt-go"
-	// "github.com/labstack/echo/v4"
-	// "github.com/plaid/plaid-go/plaid"
-	// bc "golang.org/x/crypto/bcrypt"
 	// "msudenver.edu/ledger/db"
 	// "msudenver.edu/ledger/repos"
 )
 
-// Basic struct for "Goals" & "Expenses" envelope'ing (From Ledger proposal)
-type EnvelopeInfo struct {
-	Name         string
-	StartDate    string
-	TargetDate   string
-	Notes        string
-	TargetAmount int
+type EnvelopeRepo struct {
+	db *pg.DB
 }
 
-// var repo *repos.Repo
+// Basic struct for "Goals" & "Expenses" envelope'ing (From Ledger proposal)
+type EnvelopeInfo struct {
+	ID             int64  `json:"-"`
+	Name           string `pg:",unique,notnull"`
+	CurrentBalance int
+	StartDate      string `pg:",notnull"`
+	TargetDate     string `pg:",notnull"`
+	Notes          string
+	TargetAmount   int
+}
 
 func mockData() {
 	// Randomize a "Safe-to-Spend" amount?
@@ -49,70 +41,50 @@ notes/details, and TargetAmount of envelope.
 
 Start/Target Date format:
 func Date(year int, month Month, day, hour, min, sec, nsec int, loc *Location) Time
-date := time.Date(2009, time.January, 10, 23, 0, 0, 0, time.UTC)
-
- *** hardcoded not using all required Time pkg Date func args. 4.23.21 ***
-
+date := time.Date(2009, time.January, 10, 23, 0, 0, 0, time.UTC
 */
-func CreateEnvelope(name, startDate, targetDate, notes string, targetAmount int) (string, int) {
+// func CreateEnvelope(name, startDate, targetDate, notes string, balance int, targetAmount int) (string, int) {
 
-	envelope := name + " " + startDate + " " + targetDate + " " + notes
+// 	envelope := name + " " + startDate + " " + targetDate + " " + notes
 
-	return envelope, targetAmount
+// 	return envelope, targetAmount
+// }
+
+func (r *EnvelopeRepo) CreateEnvelope(name string, balance int) (*EnvelopeInfo, error) {
+	envelope := &EnvelopeInfo{
+		Name:           name,
+		CurrentBalance: balance,
+	}
+
+	return envelope, nil
 }
 
-/*
- TODO:
- Remove existing envelope by name (Return funds to "Safe-to-Spend"?).
-*/
 func DeleteEnvelope(name string) {
 
 }
 
-/*
- TODO:
- Add funds to envelope (manually or automatically).
-
- AddFunds(User name, env name string, amount int, schedule Date)
-*/
 func AddFunds(name string, funds int) {
 
 }
 
-/*
- TODO:
- Remove funds from envelope (manually or automatically).
-
- RemoveFunds(User name, env name string, amount int, schedule Date)
-*/
 func RemoveFunds(name string, funds int) {
 
 }
 
-/*
- TODO:
- Determine envelope availability. "Safe-to-Spend" funds and/or "Overdraft"
-
-CheckAvailableBalance(User name, env name string, amount int)
-*/
 func CheckAvailableBalance(name string) {
 	// Compare current "Safe-to-Spend" value w/ this User's envelope amount.
 
 }
 
-func main() {
-	// now := time.Now()
-	// fmt.Printf("current time is :%s", now)
+// func main() {
+// 	// now := time.Now()
+// 	// fmt.Printf("current time is :%s", now)
 
-	date := time.Date(2009, time.January, 10, 23, 0, 0, 0, time.UTC)
-	fmt.Printf("\nExample date: %s\n\n", date.Local())
+// 	date := time.Date(2009, time.January, 10, 23, 0, 0, 0, time.UTC)
+// 	fmt.Printf("\nExample date: %s\n\n", date.Local())
+// 	name := "Bills"
+// 	start := date.String()
+// 	// mockData()
+// 	// fmt.Println(CreateEnvelope(name, start, start, "Yooo", 50, 150))
 
-	// mockData()
-	fmt.Println(CreateEnvelope(
-		"New Car\n",
-		" Start Date: 2021-01-10\n ",
-		"Target Date: 2022-12-31\n ",
-		"'Afford new car by end of next year, if amount: X is placed into envelope bi-weekly.'\n "+
-			" Target Amount: ", 30000))
-
-}
+// }
