@@ -19,6 +19,7 @@ export interface SignupForm {
 export interface User {
   fullName: string
   token?: string
+  accessToken?: string
 }
 
 type TokenPayload = JwtPayload & { name: string }
@@ -26,8 +27,9 @@ type TokenPayload = JwtPayload & { name: string }
 // https://usehooks.com/useAuth/
 
 interface UserContext {
-  user: User | null,
-  error: Error | null,
+  user: User | null
+  error: Error | null
+  setAccessToken: (token: string) => void
   signup: (form: SignupForm) => Promise<User>
   login: (form: LoginForm) => Promise<User>
   logout: () => Promise<void>
@@ -55,6 +57,11 @@ function useAuthState(): UserContext {
     let user: User = { token, fullName: data.name }
     setUser(user)
     return user
+  }
+
+  function setAccessToken(token: string) {
+    user!.accessToken = token
+    setUser(user)
   }
 
   async function logout() {
@@ -87,6 +94,7 @@ function useAuthState(): UserContext {
   return {
     user,
     error,
+    setAccessToken,
     signup,
     login,
     logout
@@ -97,6 +105,7 @@ const invalidContext = () => Promise.reject(new Error('Invalid User Context! You
 
 export const userContext = createContext<UserContext>({
   user: null,
+  setAccessToken: () => {},
   error: new Error('Invalid Context'),
   signup: invalidContext,
   login: invalidContext,

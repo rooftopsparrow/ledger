@@ -3,6 +3,8 @@ import { createLinkToken, createAccessToken } from './Api'
 import { usePlaidLink } from 'react-plaid-link'
 import { Redirect } from 'react-router'
 import { Account } from './PlaidApi'
+import { getTransactions } from './Accounts'
+import { useAuth } from './User'
 
 function Loading () {
   return (
@@ -73,35 +75,36 @@ type LoadAccountsProps = StepProps & {
 }
 
 function LoadAccounts (props: LoadAccountsProps): ReactElement {
+  const { user, setAccessToken } = useAuth()
   const [confirmed, setConfirmed] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [authed, setAuthed] = useState(false)
   useEffect(() => {
     if (confirmed) {
       setLoading(true)
-      createAccessToken(props.linkDetails.public_token).then((...args) => {
-        console.debug('created access token', ...args)
-        setAuthed(true)
+      createAccessToken(props.linkDetails.public_token).then((token: string) => {
+        console.debug('created access token', token)
+        setAccessToken(token)
+        return getTransactions()
+      }).then(() => {
+        props.onComplete()
       }).catch(error => {
         console.error('error creating access token', error)
         props.onComplete(error)
         setLoading(false)
       })
     }
-  }, [])
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 500)
-    return () => clearTimeout(timer)
-  }, [authed])
+  }, [confirmed])
   return (
     <div>
       <p>Sync balances and transactions your linked accounts</p>
       <ol>
         {
           props.linkDetails.accounts.map(a => {
-            <li>
-              <span>{a.name}</span>
-            </li>
+            return (
+              <li>
+                <span>{a.name}</span>
+              </li>
+            )
           })
         } 
       </ol>
@@ -125,6 +128,7 @@ function Done (props: StepProps) {
     <button
       onClick={() => props.onComplete()}
     >
+      Get to it!
     </button>
   )
 }
