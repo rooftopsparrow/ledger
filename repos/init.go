@@ -25,18 +25,18 @@ type Repo struct {
 	Plaids interface {
 		CreatePlaid(token string, itemId string) (*PlaidItem, error)
 	}
-	Enevelopes interface {
-		
+	Envelopes interface {
+		CreateEnvelope(name string, target float64) (*Envelope, error)
 	}
 }
 
 func CreateRepo(db *pg.DB) *Repo {
 	repo := &Repo{
-		db:       db,
-		Users:    &UserRepo{db: db},
-		Accounts: &AccountRepo{db: db},
-		Plaids:   &PlaidRepo{db: db},
-		Enevelopes: &EnvelopeRepo{db: db},
+		db:        db,
+		Users:     &UserRepo{db: db},
+		Accounts:  &AccountRepo{db: db},
+		Plaids:    &PlaidRepo{db: db},
+		Envelopes: &EnvelopeRepo{db: db},
 	}
 	return repo
 }

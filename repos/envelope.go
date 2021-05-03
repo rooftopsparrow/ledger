@@ -2,8 +2,9 @@ package repos
 
 import (
 	"fmt"
-	"github.com/go-pg/pg/v10"
 	"math/rand"
+
+	"github.com/go-pg/pg/v10"
 	// "time"
 	// "msudenver.edu/ledger/db"
 	// "msudenver.edu/ledger/repos"
@@ -17,11 +18,11 @@ type EnvelopeRepo struct {
 type Envelope struct {
 	ID             int64  `json:"-"`
 	Name           string `pg:",unique,notnull"`
-	CurrentBalance int
-	StartDate      string `pg:",notnull"`
-	TargetDate     string `pg:",notnull"`
-	Notes          string
-	TargetAmount   int
+	CurrentBalance float64
+	TargetAmount   float64
+	// StartDate      time.Time `pg:",notnull"`
+	// TargetDate     time.Time `pg:",notnull"`
+	// Notes          string
 }
 
 func mockData() {
@@ -50,10 +51,10 @@ date := time.Date(2009, time.January, 10, 23, 0, 0, 0, time.UTC
 // 	return envelope, targetAmount
 // }
 
-func (r *EnvelopeRepo) CreateEnvelope(name string, balance int) (*Envelope, error) {
+func (r *EnvelopeRepo) CreateEnvelope(name string, target float64) (*Envelope, error) {
 	envelope := &Envelope{
-		Name:           name,
-		CurrentBalance: balance,
+		Name:         name,
+		TargetAmount: target,
 	}
 
 	if _, err := r.db.Model(envelope).Returning("*").Insert(); err != nil {
