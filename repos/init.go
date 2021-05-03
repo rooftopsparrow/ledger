@@ -11,6 +11,7 @@ var tables = []interface{}{
 	(*User)(nil),
 	(*PlaidItem)(nil),
 	(*Account)(nil),
+	(*Envelope)(nil),
 }
 
 type Repo struct {
@@ -24,6 +25,9 @@ type Repo struct {
 	Plaids interface {
 		CreatePlaid(token string, itemId string) (*PlaidItem, error)
 	}
+	Enevelopes interface {
+		
+	}
 }
 
 func CreateRepo(db *pg.DB) *Repo {
@@ -32,6 +36,7 @@ func CreateRepo(db *pg.DB) *Repo {
 		Users:    &UserRepo{db: db},
 		Accounts: &AccountRepo{db: db},
 		Plaids:   &PlaidRepo{db: db},
+		Enevelopes: &EnvelopeRepo{db: db},
 	}
 	return repo
 }
