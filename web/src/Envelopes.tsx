@@ -14,6 +14,7 @@ export default function Envelopes () {
               className="bg-yellow-300 rounded-sm px-4 py-2 ml border border-transparent shadow hover:shadow-md"
               onClick={() => setEditing(!editing)}
             >
+              Create Envelope
             </button>
           </span>
         </div>
