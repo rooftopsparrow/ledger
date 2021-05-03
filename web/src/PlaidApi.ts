@@ -41,6 +41,14 @@ export interface Balances {
     iso_currency_code: IsoCurrencyCode,
     unofficial_currency_code: string
 }
+
+export interface AccountSummary {
+    id: string,
+    mask: string
+    name: string
+    subtype: string
+    type: string
+}
   
 export interface Account {
     account_id: string
@@ -51,6 +59,11 @@ export interface Account {
     subtype: string
     type: string,
     verification_status: string
+}
+
+export interface Institution {
+    institution_id: string
+    name: string
 }
 
 export interface Geo {

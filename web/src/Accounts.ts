@@ -1,10 +1,11 @@
 import { createElement, createContext, useContext, useState } from 'react'
-import { Transaction, Account, TransactionsResponse } from './PlaidApi'
+import { Transaction, Account, Balances, TransactionsResponse } from './PlaidApi'
 
 interface AccountContext {
   account: Account|null
   transactions: Array<Transaction>
   loadAccount: () => Promise<void>
+  loadBalance: () => Promise<void>
   error: Error|null
 }
 
@@ -19,26 +20,43 @@ export async function getTransactions (): Promise<TransactionsResponse> {
   throw new Error(response.statusText)
 }
 
+export async function getBalances(): Promise<any> {
+  const response = await fetch('/api/get_account_balances', { method: 'POST' })
+  if (response.ok) {
+    const data = await response.json()
+    return data
+  }
+  throw new Error(response.statusText)
+}
+
 function useAccountState(): AccountContext {
   const [account, setAccount] = useState<Account|null>(null)
+  const [balance, setBalance] = useState<Balances|null>(null)
   const [transactions, setTransactions] = useState<Array<Transaction>>([])
   const [error, setError] = useState<Error|null>(null)
   async function loadAccount () {
     const {transactions, accounts} = await getTransactions()
-    // TODO: Protected envelopes are savings accounts.
+    // TODO: Protected envelopes are actually savings accounts.
     const account = accounts.find((a: Account) => {
       return a.type === "depository" && a.subtype === "checking"
     })
     if (!account) {
       return setError(new Error('No Checking Account!'))
     }
+    const accntTransacitons = transactions.filter(t => {
+      return t.account_id === account.account_id
+    })
     setAccount(account)
-    setTransactions(transactions)
+    setTransactions(accntTransacitons)
+  }
+  async function loadBalance () {
+    getBalances().then()
   }
   return {
     account,
     transactions,
     loadAccount,
+    loadBalance,
     error
   }
 }
@@ -51,6 +69,7 @@ const accountContext = createContext<AccountContext>({
   account: null,
   transactions: [],
   loadAccount: noop,
+  loadBalance: noop,
   error: new Error('Invalid Context! This is used out of context')
 })
 

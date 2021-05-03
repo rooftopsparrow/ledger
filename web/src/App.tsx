@@ -36,23 +36,23 @@ function App () {
           <Route exact path="/login">
             <Login />
           </Route>
-          <Route path="/link">
+          <PrivateRoute path="/link">
             <Setup />
-          </Route>
+          </PrivateRoute>
           <PrivateRoute>
-              <div className="flex flex-col justify-center">
-                <div className="container mx-auto px-3 h-screen bg-white">
-                  <Nav />
-                  <ProvideAccount>
-                    <PrivateRoute path="/activity">
-                      <Activity />
-                    </PrivateRoute>
-                  </ProvideAccount>
-                  <PrivateRoute path="/envelopes">
-                    <h1>Hello Envelopes</h1>
+            <div className="flex flex-col justify-center">
+              <div className="container mx-auto px-3 h-screen bg-white">
+                <Nav />
+                <ProvideAccount>
+                  <PrivateRoute path="/activity">
+                    <Activity />
                   </PrivateRoute>
-                </div>
+                </ProvideAccount>
+                <PrivateRoute path="/envelopes">
+                  <h1>Hello Envelopes</h1>
+                </PrivateRoute>
               </div>
+            </div>
           </PrivateRoute>
         </Switch>
       </main>
