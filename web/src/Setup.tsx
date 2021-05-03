@@ -18,7 +18,6 @@ function Loading () {
 interface LinkDetails {
   public_token: string,
   accounts: Array<Account>
-  institution: 
 }
 
 type StepProps = {
@@ -55,16 +54,6 @@ function LinkAccount (props: LinkAccountProps) {
     onSuccess
   })
   useEffect(() => {
-    if (publicToken) {
-      createAccessToken(publicToken).then((...args) => {
-        console.debug('created access token', ...args)
-        setAccessToken(true)
-      }).catch(error => {
-        console.error('error creating access token')
-      })
-    }
-  }, [publicToken])
-  useEffect(() => {
     if (error || handoff) {
       error ? props.onComplete(error) : props.onComplete()
     }
@@ -80,22 +69,25 @@ function LinkAccount (props: LinkAccountProps) {
 }
 
 type LoadAccountsProps = StepProps & {
-  publicToken: string
+  linkDetails: LinkDetails
 }
 
 function LoadAccounts (props: LoadAccountsProps): ReactElement {
+  const [confirmed, setConfirmed] = useState(false)
   const [loading, setLoading] = useState(false)
   const [authed, setAuthed] = useState(false)
   useEffect(() => {
-    setLoading(loading)
-    createAccessToken(props.publicToken).then((...args) => {
-      console.debug('created access token', ...args)
-      setAuthed(true)
-    }).catch(error => {
-      console.error('error creating access token', error)
-      props.onComplete(error)
-      setLoading(false)
-    })
+    if (confirmed) {
+      setLoading(true)
+      createAccessToken(props.linkDetails.public_token).then((...args) => {
+        console.debug('created access token', ...args)
+        setAuthed(true)
+      }).catch(error => {
+        console.error('error creating access token', error)
+        props.onComplete(error)
+        setLoading(false)
+      })
+    }
   }, [])
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 500)
@@ -103,10 +95,26 @@ function LoadAccounts (props: LoadAccountsProps): ReactElement {
   }, [authed])
   return (
     <div>
+      <p>Sync balances and transactions your linked accounts</p>
+      <ol>
+        {
+          props.linkDetails.accounts.map(a => {
+            <li>
+              <span>{a.name}</span>
+            </li>
+          })
+        } 
+      </ol>
       {
         loading
-        ? <Loading />
-        : <button onClick={() => props.onComplete()}>Continue</button>
+        ?
+        <p><Loading /></p>
+        :
+        <button
+          className="px-36 py-3 mt-4 bg-purple-800 hover:bg-purple-600 text-yellow-200 shadow-lg rounded-md"
+          type="button" onClick={() => setConfirmed(true)}>
+          Sync Accounts
+        </button>
       }
     </div>
   )
@@ -114,7 +122,9 @@ function LoadAccounts (props: LoadAccountsProps): ReactElement {
 
 function Done (props: StepProps) {
   return (
-    <button onClick={() => props.onComplete()}>
+    <button
+      onClick={() => props.onComplete()}
+    >
     </button>
   )
 }
@@ -124,7 +134,7 @@ export default function Setup (): ReactElement {
   const [linkToken, setLinkToken] = useState<string>('')
   const [linkDetails, setLinkDetails] = useState<LinkDetails>()
   const TOTAL_STEPS = 3
-  const [step, setStep] = useState(2)
+  const [step, setStep] = useState(1)
   const [error, setError] = useState<Error>()
   const [complete, setComplete] = useState(false)
   
@@ -178,7 +188,7 @@ export default function Setup (): ReactElement {
             />
           }
           { linkDetails && step === 2 && <LoadAccounts
-              publicToken={linkDetails.public_token}
+              linkDetails={linkDetails}
               onComplete={nextStep}
               />
           }
