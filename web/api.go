@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"encoding/json"
@@ -268,6 +269,19 @@ func main() {
 		fmt.Println(response)
 
 		return c.JSON(http.StatusCreated, response)
+	})
+
+	server.POST("/envelopes", func(c echo.Context) error {
+		name := c.FormValue("name")
+		targetBalance, err := strconv.ParseFloat(c.FormValue("target_balance"), 64)
+		if err != nil {
+			return c.String(http.StatusBadRequest, "target_balance must be a float")
+		}
+		envelope, err := repo.Envelopes.CreateEnvelope(name, targetBalance)
+		if err != nil {
+			return c.String(http.StatusInternalServerError, err.Error())
+		}
+		return c.JSON(http.StatusCreated, envelope)
 	})
 
 	// Start the server
