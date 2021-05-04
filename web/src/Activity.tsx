@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom'
 
 
 export default function Account() {
-  const { user } = useAuth()
+  const { user, setAccessToken } = useAuth()
   const [loading, setLoading] = useState(false)
   const [selected, setSelected] = useState<Transaction>()
   const {
@@ -23,6 +23,7 @@ export default function Account() {
       setLoading(true)
       try {
         await loadAccount()
+        setAccessToken('we have one ;)')
       } catch (error) {
         console.error('error loading account', error)
       } finally {
@@ -70,8 +71,7 @@ export default function Account() {
         </div>
         <div className="pb-3">
           {
-            user
-              && !user.accessToken
+            !loading && !user?.accessToken
               && <Link
                     className="bg-purple-800 px-4 py-2 text-center text-white"
                     to="/link">Link your account</Link>
