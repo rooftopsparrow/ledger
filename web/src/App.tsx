@@ -1,5 +1,5 @@
 import React from 'react'
-import { Switch, Route, Link, NavLink, Redirect, RouteProps } from 'react-router-dom'
+import { Switch, Route, Redirect, RouteProps } from 'react-router-dom'
 import Landing from './Landing'
 import Login from './Login'
 import Signup from './Signup'
@@ -9,6 +9,7 @@ import { ProvideAuth, useAuth } from './User'
 import Nav from './Nav'
 import { ProvideAccount } from './Accounts'
 import Envelopes from './Envelopes'
+import Balances from './Balances'
 
 function PrivateRoute({children, ...rest}: RouteProps) {
   const { user } = useAuth()
@@ -45,14 +46,12 @@ function App () {
               <div className="flex flex-col justify-center">
                 <div className="container mx-auto px-3 h-screen bg-white">
                   <Nav />
+                  <Balances />
                   <PrivateRoute path="/activity">
                     <Activity />
                   </PrivateRoute>
                   <PrivateRoute path="/envelopes">
-                    <Envelopes />
-                  </PrivateRoute>
-                  <PrivateRoute path="/envelopes">
-                    <h1>Hello Envelopes</h1>
+                    <Envelopes /> 
                   </PrivateRoute>
                 </div>
               </div>

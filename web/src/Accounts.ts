@@ -1,11 +1,13 @@
 import { createElement, createContext, useContext, useState } from 'react'
-import { Transaction, Account, Balances, TransactionsResponse } from './PlaidApi'
+import { Transaction, Account, Balances, Envelope, TransactionsResponse } from './PlaidApi'
 
 interface AccountContext {
   account: Account|null
   transactions: Array<Transaction>
+  envelopes: Array<Envelope>
   loadAccount: () => Promise<void>
   loadBalance: () => Promise<void>
+  loadEnvelopes: () => Promise<void>
   error: Error|null
 }
 
@@ -29,10 +31,20 @@ export async function getBalances(): Promise<any> {
   throw new Error(response.statusText)
 }
 
+export async function getEnvelopes(): Promise<Array<Envelope>> {
+  const response = await fetch('/api/get_envelopes', { method: 'POST' })
+  if (response.ok) {
+    const data = await response.json()
+    return data as Array<Envelope>
+  }
+  throw new Error(response.statusText)
+}
+
 function useAccountState(): AccountContext {
   const [account, setAccount] = useState<Account|null>(null)
   const [balance, setBalance] = useState<Balances|null>(null)
   const [transactions, setTransactions] = useState<Array<Transaction>>([])
+  const [envelopes, setEnvelopes] = useState<Array<Envelope>>([])
   const [error, setError] = useState<Error|null>(null)
   async function loadAccount () {
     const {transactions, accounts} = await getTransactions()
@@ -52,11 +64,17 @@ function useAccountState(): AccountContext {
   async function loadBalance () {
     getBalances().then()
   }
+  async function loadEnvelopes () {
+    const envelopes = await getEnvelopes()
+    setEnvelopes(envelopes)
+  }
   return {
     account,
     transactions,
+    envelopes,
     loadAccount,
     loadBalance,
+    loadEnvelopes,
     error
   }
 }
@@ -68,8 +86,10 @@ const noop = async () => {
 const accountContext = createContext<AccountContext>({
   account: null,
   transactions: [],
+  envelopes: [],
   loadAccount: noop,
   loadBalance: noop,
+  loadEnvelopes: noop,
   error: new Error('Invalid Context! This is used out of context')
 })
 

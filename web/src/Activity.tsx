@@ -40,115 +40,61 @@ export default function Account() {
   }, [selected])
 
   return (
-    <div id="activity-overview" className="flex flex-col justify-center">
-      <section className="container mx-auto px-3 h-full bg-white">
-        <div className="py-3">
-          <h2 className="font-bold text-xl">
-            <Money value={account?.balances?.available || 0.00} /> <span className="font-light text-base text-gray-600 align-text-top">
-              <span className="">Safe-to-Spend</span>
-            </span>
-          </h2>
-          <ul className="inline-flex space-x-2">
-            <li id="available-balance" className="text-sm">
-              <h3><Money value={account?.balances?.available || 0.00} /> <span className="font-light text-xs text-gray-600">
-                  available balance
-                </span>
-              </h3>
-            </li>
-            <li id="scheduled-activity" className="text-sm">
-              <h3><Money value={0.00} /> <span className="font-light text-xs text-gray-600">
-                  scheduled activity
-                </span>
-              </h3>
-            </li>
-            <li id="envelope-balance" className="text-sm">
-              <h3><Money value={0.00} /> <span className="font-light text-xs text-gray-600">
-                in envelopes</span>
-              </h3>
-            </li>
-          </ul>
-        </div>
-        <div className="pb-3">
+    <div className="grid grid-cols-9">
+      <div className="col-span-6 gap-x-2">
+        <ol className="overflow-y-auto" style={{maxHeight: '83vh'}}>
           {
-            user
-              && !user.accessToken
-              && <Link
-                    className="bg-purple-800 px-4 py-2 text-center text-white"
-                    to="/link">Link your account</Link>
-          }
-        </div> 
-          {/* Search
-            <form>
-            <span>x</span>
-            <input type="search" className="" />
-            <button type="submit">
-              Search
-            </button>
-            <div>
-              <span>Current Filters:</span>
-              <ol>
-                <li><span>Last months</span></li>
-              </ol>
-            </div>
-          </form> */}
-          {/* Alerts/notificatons */}
-        <div className="grid grid-cols-9">
-          <div className="col-span-6 gap-x-2">
-            <ol className="overflow-y-auto" style={{maxHeight: '83vh'}}>
-              {
-                transactions.map((transaction, index, arr) => {
-                  const isSelected = transaction.transaction_id === selected?.transaction_id
-                  const prev = arr[index - 1]
-                  const dateDiff = transaction.date !== prev?.date
-                  return (
-                    <>
-                    {
-                      dateDiff
-                      ? <li key={transaction.date}
-                          className="py-2 text-sm px-2 bg-white">
-                          {transaction.date}
-                        </li>
-                        : null
-                    }
-                    <li
-                      key={transaction.transaction_id}
-                      className={`border border-gray-100 px-2 py-2 hover:bg-purple-50 cursor-pointer ${index % 2 == 1 ? 'bg-gray-50' : 'bg-gray-100'} ${isSelected ? 'bg-purple-100' : ''}`}
-                      onClick={onSelect.bind(null, transaction)}
-                    >
-                      <TransactionItem
-                        name={transaction.name} 
-                        amount={transaction.amount}
-                        category={transaction.category[0]} />
+            transactions.map((transaction, index, arr) => {
+              const isSelected = transaction.transaction_id === selected?.transaction_id
+              const prev = arr[index - 1]
+              const dateDiff = transaction.date !== prev?.date
+              return (
+                <>
+                {
+                  dateDiff
+                  ? <li key={transaction.date}
+                      className="py-2 text-sm px-2 bg-white">
+                      {transaction.date}
                     </li>
-                    </>
-                  )
-                })
-              }
-            </ol>
-          </div>
-          <div className="col-span-3">
-            {
-              selected
-              ? (
-                <aside className="px-5">
-                  <header className="bg-purple-400 text-white flex flex-inline py-2 align-middle">
-                      <button
-                        type="button"
-                        className="px-3"
-                        onClick={() => setSelected(undefined)}>
-                          ⇽
-                      </button>
-                      <h3 className="text-lg font-semibold">
-                        Posted Transaction
-                      </h3>
-                  </header>
-                  <TransactionDetails transaction={selected} />
-                </aside>
-              ) : null
-            }
-          </div>
-        </div>
-      </section>
+                    : null
+                }
+                <li
+                  key={transaction.transaction_id}
+                  className={`border border-gray-100 px-2 py-2 hover:bg-purple-50 cursor-pointer ${index % 2 == 1 ? 'bg-gray-50' : 'bg-gray-100'} ${isSelected ? 'bg-purple-100' : ''}`}
+                  onClick={onSelect.bind(null, transaction)}
+                >
+                  <TransactionItem
+                    name={transaction.name} 
+                    amount={transaction.amount}
+                    category={transaction.category[0]} />
+                </li>
+                </>
+              )
+            })
+          }
+        </ol>
+      </div>
+      <div className="col-span-3">
+        {
+          selected
+          ? (
+            <aside className="px-5">
+              <header className="bg-purple-400 text-white flex flex-inline py-2 align-middle">
+                  <button
+                    type="button"
+                    className="px-3"
+                    onClick={() => setSelected(undefined)}>
+                      ⇽
+                  </button>
+                  <h3 className="text-lg font-semibold">
+                    Posted Transaction
+                  </h3>
+              </header>
+              <TransactionDetails transaction={selected} />
+            </aside>
+          ) : null
+        }
+      </div>
     </div>
   )
 }
