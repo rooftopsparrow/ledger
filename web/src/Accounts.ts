@@ -1,4 +1,4 @@
-import { createElement, createContext, useContext, useState } from 'react'
+import { createElement, createContext, useContext, useCallback, useState } from 'react'
 import { Transaction, Account, Balances, Envelope, TransactionsResponse } from './PlaidApi'
 
 interface AccountContext {
@@ -8,6 +8,10 @@ interface AccountContext {
   loadAccount: () => Promise<void>
   loadBalance: () => Promise<void>
   loadEnvelopes: () => Promise<void>
+  appendEnvelope: (e: Envelope) => void
+  removeEnvelope: (e: Envelope) => void
+  updateEnvelope: (e: Envelope) => void
+  spendFromEnvelope: (e: Envelope, trx: Transaction) => void
   error: Error|null
 }
 
@@ -46,6 +50,7 @@ function useAccountState(): AccountContext {
   const [transactions, setTransactions] = useState<Array<Transaction>>([])
   const [envelopes, setEnvelopes] = useState<Array<Envelope>>([])
   const [error, setError] = useState<Error|null>(null)
+
   async function loadAccount () {
     const {transactions, accounts} = await getTransactions()
     // TODO: Protected envelopes are actually savings accounts.
@@ -68,6 +73,40 @@ function useAccountState(): AccountContext {
     const envelopes = await getEnvelopes()
     setEnvelopes(envelopes)
   }
+  const appendEnvelope = useCallback((e: Envelope) => {
+    setEnvelopes(current => [...current, e])
+  }, [])
+  const removeEnvelope = useCallback((e: Envelope) => {
+    setEnvelopes(current => {
+      return current.filter(c => c.id != e.id)
+    })
+  }, [])
+  const updateEnvelope = useCallback((e: Envelope) => {
+    setEnvelopes(current => {
+      return current.map((c) => {
+        if (c.id == e.id) return {...c, ...e}
+        return c
+      })
+    })
+  }, [])
+  const spendFromEnvelope = useCallback((e: Envelope, trx: Transaction) => {
+    setTransactions(current => {
+      return current.map(c => {
+        if (c.transaction_id == trx.transaction_id) {
+          return {...c, envelope_id: e.id }
+        }
+        return c
+      })
+    })
+    setEnvelopes(current => {
+      return current.map((c) => {
+        if (c.id == e.id) {
+          return {...c, balance: (c.balance - Math.min(c.balance, trx.amount)) }
+        }
+        return c
+      })
+    }) 
+  }, [envelopes, transactions])
   return {
     account,
     transactions,
@@ -75,6 +114,10 @@ function useAccountState(): AccountContext {
     loadAccount,
     loadBalance,
     loadEnvelopes,
+    appendEnvelope,
+    removeEnvelope,
+    updateEnvelope,
+    spendFromEnvelope,
     error
   }
 }
@@ -90,6 +133,10 @@ const accountContext = createContext<AccountContext>({
   loadAccount: noop,
   loadBalance: noop,
   loadEnvelopes: noop,
+  appendEnvelope: noop,
+  removeEnvelope: noop,
+  updateEnvelope: noop,
+  spendFromEnvelope: noop,
   error: new Error('Invalid Context! This is used out of context')
 })
 

@@ -38,8 +38,6 @@ export interface Balances {
     available: number,
     current: number,
     limit: number,
-    envelopes: number,
-    safe_to_spend: number
     iso_currency_code: IsoCurrencyCode,
     unofficial_currency_code: string
 }
@@ -110,6 +108,7 @@ export interface Transaction {
     transaction_id: string,
     transaction_type: string
     transaction_code: string
+    envelope_id?: string
 }
  
 export type TransactionsResponse = {
@@ -121,6 +120,7 @@ export type TransactionsResponse = {
 }
 
 export interface Envelope {
+    id?: string
     name: string
     balance: number
     notes: string

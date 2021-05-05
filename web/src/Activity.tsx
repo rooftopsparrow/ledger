@@ -1,20 +1,20 @@
 import React, { useCallback, useEffect, useState, ReactElement, useMemo } from 'react'
 import { useAccount } from './Accounts'
 import { Money } from './Money'
-import { Transaction } from './PlaidApi'
+import { Transaction, Envelope } from './PlaidApi'
 import { DateTime } from 'luxon'
 import { useAuth } from './User'
-import { Link } from 'react-router-dom'
-
+import Loading from './Loading'
 
 export default function Account() {
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [selected, setSelected] = useState<Transaction>()
   const {
-    account,
     transactions,
     loadAccount,
+    envelopes,
+    spendFromEnvelope,
     error: accountError
   } = useAccount()
 
@@ -44,10 +44,14 @@ export default function Account() {
       <div className="col-span-6 gap-x-2">
         <ol className="overflow-y-auto" style={{maxHeight: '83vh'}}>
           {
-            transactions.map((transaction, index, arr) => {
+            loading
+            ? <Loading spinnerClass="text-purple-600" />
+            : transactions.map((transaction, index, arr) => {
               const isSelected = transaction.transaction_id === selected?.transaction_id
               const prev = arr[index - 1]
               const dateDiff = transaction.date !== prev?.date
+              const spentFrom = transaction.envelope_id != null
+                && envelopes.find(e => e.id == transaction.envelope_id)
               return (
                 <>
                 {
@@ -66,7 +70,9 @@ export default function Account() {
                   <TransactionItem
                     name={transaction.name} 
                     amount={transaction.amount}
-                    category={transaction.category[0]} />
+                    category={transaction.category[0]}
+                    spendFrom={spentFrom ? spentFrom.name : undefined} 
+                  />
                 </li>
                 </>
               )
@@ -90,7 +96,7 @@ export default function Account() {
                     Posted Transaction
                   </h3>
               </header>
-              <TransactionDetails transaction={selected} />
+              <TransactionDetails key={selected.transaction_id} transaction={selected} />
             </aside>
           ) : null
         }
@@ -103,7 +109,7 @@ export default function Account() {
 type TransactionItemProps = {
   name: string,
   amount: number,
-  from_balance?: string,
+  spendFrom?: string,
   pending?: string,
   category: string,
 }
@@ -118,7 +124,7 @@ function TransactionItem (props: TransactionItemProps): ReactElement {
         <Money value={props.amount} colorized inverted/>
       </span>
       <span className="col-span-3">
-        Spent from: {props.from_balance || "Safe-to-Spend"}
+        Spent from: {props.spendFrom || "Safe-to-Spend"}
       </span>
       <span className="col-span-2 text-right">{ props.category }</span>
     </div>
@@ -130,10 +136,54 @@ type TransactionDetails = {
 }
 
 function TransactionDetails (props: TransactionDetails) {
+  const { spendFromEnvelope, envelopes } = useAccount()
   const { transaction } = props
-  const isPending = transaction.pending
   const [categoryBroad, categorySpecific] = transaction.category
+  const spentFrom = useMemo<Envelope|undefined>(() => {
+    return transaction.envelope_id != null
+      ? envelopes.find(e => e.id == transaction.envelope_id)
+      : undefined 
+  }, [])
+  const [editing, setEditing] = useState(false)
+  const [newSpendFrom, setNewSpendFrom] = useState<Envelope>()
   const date = DateTime.fromISO(transaction.date)
+  if (editing) {
+    return (
+      <div className="mt-4">
+        <ol>
+          <li
+            key="default"
+            onClick={() => setNewSpendFrom(undefined)}
+            className={`py-2 cursor-pointer hover:bg-purple-200 ${newSpendFrom == null ? 'bg-purple-100' : '' }`}>
+              <span className="px-2">Safe-To-Spend</span>
+          </li>
+          {
+            envelopes.map(e => {
+              return (
+                <li
+                  key={e.id}
+                  onClick={() => setNewSpendFrom(e)}
+                  className={`py-2 cursor-pointer  hover:bg-purple-200 ${newSpendFrom?.id == e.id ? 'bg-purple-100' : ''}`}
+                >
+                  <span className="px-2">{e.name}</span> <span className="px-2 float-right"><Money value={e.balance} /></span>
+                </li>
+              )
+            })
+          }
+        </ol>
+      <div className="flex flex-col">
+        <button type="button" onClick={() => {
+          newSpendFrom && spendFromEnvelope(newSpendFrom, transaction)
+        }}>
+          Save
+        </button>
+        <button type="button" onClick={() => setEditing(false)}>
+          Cancel
+        </button>
+      </div>
+      </div>
+    )
+  }
   return (
       <div>
         <p className="font-thin py-2">{date.toLocaleString()}</p>
@@ -155,7 +205,14 @@ function TransactionDetails (props: TransactionDetails) {
           </div>
           <div>
             <dt className="font-semibold">Spent From</dt>
-            <dd>Safe-to-Spend</dd>
+            <dd>
+              { spentFrom ? spentFrom.name : "Safe-to-Spend" }
+              <span className="float-right">
+                <button className="font-light text-sm" onClick={() => setEditing(true)}>
+                  edit
+                </button>
+              </span>
+            </dd>
           </div>
           <div>
             <dt className="font-semibold">Memo</dt>
